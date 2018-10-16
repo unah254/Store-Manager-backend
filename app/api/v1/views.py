@@ -83,3 +83,10 @@ class Createproduct(Resource):
         products.append(product)
 
         return {"message": "product added"}, 201
+
+class Allproducts(Resource):
+
+    def get(self):
+        ''' get all products '''
+
+        return {'Allproducts': [product.serialize() for product in products]}, 200
