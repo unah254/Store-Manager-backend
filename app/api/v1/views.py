@@ -103,3 +103,12 @@ class Singleproduct(Resource):
             return {"Products": product.serialize()}
 
         return {'message': "Not found"}, 404
+
+    def delete(self, id):
+        ''' Delete a single product '''
+
+        product = Product().get_id(id)
+        if product:
+            products.remove(product)
+            return {'message': "Deleted"}, 200
+        return {'message': "Not found"}, 404
