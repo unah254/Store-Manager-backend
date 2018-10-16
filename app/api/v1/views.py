@@ -90,3 +90,16 @@ class Allproducts(Resource):
         ''' get all products '''
 
         return {'Allproducts': [product.serialize() for product in products]}, 200
+
+class Singleproduct(Resource):
+    '''class to get a specific product'''
+
+    def get(self, id):
+        ''' get a specific order '''
+
+        product = Product().get_id(id)
+
+        if product:
+            return {"Products": product.serialize()}
+
+        return {'message': "Not found"}, 404
