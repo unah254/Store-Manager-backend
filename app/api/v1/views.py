@@ -206,3 +206,16 @@ class Allsales(Resource):
         ''' get all salerecords '''
 
         return {'Allsales': [sale.serialize() for sale in sales]}, 200
+
+class Singlesale(Resource):
+    '''class to get a specific record'''
+
+    def get(self, id):
+        ''' get a specific record '''
+
+        sale = Salesrecord().get_id(id)
+
+        if sale:
+            return {"Salesrecord": sale.serialize()}
+
+        return {'message': "Not found"}, 404
