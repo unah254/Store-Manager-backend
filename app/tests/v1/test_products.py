@@ -3,6 +3,7 @@ import unittest
 from unittest import TestCase
 from app import create_app
 
+from app.api.v1.views import Createproduct, Allproducts, Singleproduct
 
 class TestProducts(TestCase):
     '''Test the products'''
@@ -13,7 +14,7 @@ class TestProducts(TestCase):
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
-        self.order_data = {
+        self.product_data = {
             "product": "Microphone",
             "category": "Electronics",
             "price": 2500
@@ -22,16 +23,16 @@ class TestProducts(TestCase):
     def test_get_specific_product(self):
         ''' Test to get single product '''
 
-        neworder = self.client.post(
+        newproduct = self.client.post(
             "/api/v1/products",
-            data=json.dumps(self.order_data),
+            data=json.dumps(self.product_data),
             headers={"content-type": "application/json"}
         )
         response = self.client.get(
             "/api/v1/products/1", content_type='application/json')
 
         self.assertEqual(response.content_type, 'application/json')
-        print(neworder, response)
+        print(newproduct, response)
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.status_code, 404)
 
@@ -51,15 +52,15 @@ class TestProducts(TestCase):
         ''' Test to add new product '''
 
         response = self.client.post(
-            "/api/v1/product",
-            data=json.dumps(self.order_data),
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
             headers={"content-type":"application/json"}
         )
 
         response_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response_data['message'], "record created")
+        self.assertEqual(response_data['message'], "product created")
 
 class Testsales(TestCase):
     '''Test the sales'''

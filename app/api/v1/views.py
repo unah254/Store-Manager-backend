@@ -71,7 +71,7 @@ class Createproduct(Resource):
         name = data['name']
         description = data['description']
         price = data['price']
-        category = ['category']
+        category = data['category']
 
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
@@ -112,3 +112,90 @@ class Singleproduct(Resource):
             products.remove(product)
             return {'message': "Deleted"}, 200
         return {'message': "Not found"}, 404
+
+sales=[]
+class Salesrecord:
+    '''sales class to initialize records and display in json'''
+    def __init__(self, name=None, price=None,category=None, quantitysold=None, amountbrought=None):
+        '''create an instance of a new sale record'''
+        self.id = len(sales)+1
+        self.name = name
+        self.price = price
+        self.quantitysold = quantitysold
+        self.category = category
+        self.amountbrought = amountbrought
+
+    def serialize(self):
+        '''to get created data and display in json format'''
+        return dict(
+            id=self.id,
+            name=self.name,
+            price=self.price,
+            quantitysold=self.quantitysold,
+            category=self.category,
+            amountbrought=self.amountbrought
+        )
+
+    def get_id(self, sales_id):
+        '''display specific sales id'''
+        for Salesrecord in sales:
+            if Salesrecord.id == sales_id:
+                return Salesrecord
+
+
+class Createrecord(Resource):
+    '''to get input from user and create a new record'''
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'name',
+        type=str,
+        required=True,
+        help="This field cannot be left blank"
+    )
+
+    parser.add_argument(
+        'price',
+        type=int,
+        required=True,
+        help="This field cannot be left blank"
+    )
+
+    parser.add_argument(
+        'category',
+        type=str,
+        required=True,
+        help="This field cannot be left blank!"
+    )
+
+    parser.add_argument(
+        'quantitysold',
+        type=int,
+        required=True,
+        help="This field cannot be left blank!"
+    )
+
+    parser.add_argument(
+        'amountbrought',
+        type=int,
+        required=True,
+        help="This field cannot be left blank!"
+    )
+
+    def post(self):
+        ''' add new record'''
+        data = Createrecord.parser.parse_args()
+
+        name = data['name']
+        price = data['price']
+        category = data['category']
+        quantitysold = data['quantitysold']
+        amountbrought = data['amountbrought']
+
+        if not Validators().valid_product_name(name):
+            return {'message': 'Enter valid product name'}, 400
+
+        sale = Salesrecord(name, price, category, quantitysold, amountbrought)
+
+        sales.append(sale)
+
+        return {"message": "record created"}, 201
