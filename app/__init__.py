@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restful import  Api
 from instance.config import app_config
 
-from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord
+from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord, Allsales
 
 
 def create_app(config_name):
@@ -22,6 +22,8 @@ def create_app(config_name):
     api.add_resource(Allproducts, '/api/v1/products')
     api.add_resource(Singleproduct, '/api/v1/products/<int:id>')
     api.add_resource(Createrecord, '/api/v1/sales')
+    api.add_resource(Allsales, '/api/v1/sales')
+
 
 
         

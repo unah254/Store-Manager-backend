@@ -199,3 +199,10 @@ class Createrecord(Resource):
         sales.append(sale)
 
         return {"message": "record created"}, 201
+
+class Allsales(Resource):
+
+    def get(self):
+        ''' get all salerecords '''
+
+        return {'Allsales': [sale.serialize() for sale in sales]}, 200
