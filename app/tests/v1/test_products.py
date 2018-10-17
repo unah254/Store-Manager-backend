@@ -15,7 +15,8 @@ class TestProducts(TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.product_data = {
-            "product": "Microphone",
+            "name": "Microphone",
+            "description": "podcast",
             "category": "Electronics",
             "price": 2500
         }
@@ -60,7 +61,7 @@ class TestProducts(TestCase):
         response_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response_data['message'], "product created")
+        self.assertEqual(response_data['message'], "product added")
 
 class Testsales(TestCase):
     '''Test the sales'''
