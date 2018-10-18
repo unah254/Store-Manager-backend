@@ -1,10 +1,13 @@
 # imported necessary modules to create flask microframework
 from flask import Flask
 from flask_restful import  Api
+from flask_jwt_extended import JWTManager
 from instance.config import app_config
 
 from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord, Allsales, Singlesale
+from .api.v1.auth import Login, SignUp
 
+jwt = JWTManager()
 
 def create_app(config_name):
     """
@@ -15,6 +18,8 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
+
+    jwt.init_app(app)
     
 
     api = Api(app)
