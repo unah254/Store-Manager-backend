@@ -1,10 +1,10 @@
+import datetime
 from flask import Flask, request
-from flask_restful import Resource, Api, reqparse
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask_restful import Resource, reqparse
+from werkzeug.security import check_password_hash
 
 from flask_jwt_extended import create_access_token
 
-import datetime
 
 # imported module to validate the inputs
 from .utils import Validators
@@ -12,6 +12,8 @@ from .models import Product, Salesrecord, User, Users
 
 # list to store products
 products = []
+
+
 class Createproduct(Resource):
     '''to get input from user and create a new product'''
     parser = reqparse.RequestParser()
@@ -29,7 +31,6 @@ class Createproduct(Resource):
         help="This field cannot be left blank"
     )
 
-
     parser.add_argument(
         'category',
         type=str,
@@ -42,7 +43,7 @@ class Createproduct(Resource):
         data = request.get_json()
 
         name = data['name']
-        price= data['price']
+        price = data['price']
         category = data['category']
 
         if not Validators().valid_product_name(name):
@@ -56,12 +57,14 @@ class Createproduct(Resource):
 
         return {"message": "product added"}, 201
 
+
 class Allproducts(Resource):
 
     def get(self):
         ''' get all products '''
 
         return {'Allproducts': [product.serialize() for product in products]}, 200
+
 
 class Singleproduct(Resource):
     '''class to get a specific product'''
@@ -84,6 +87,7 @@ class Singleproduct(Resource):
             products.remove(product)
             return {'message': "Deleted"}, 200
         return {'message': "Not found"}, 404
+
 
 sales=[]
 class Createrecord(Resource):
@@ -129,7 +133,7 @@ class Createrecord(Resource):
         data = Createrecord.parser.parse_args()
 
         name = data['name']
-        price = data['price']
+        price= data['price']
         category = data['category']
         quantitysold = data['quantitysold']
         amountbrought = data['amountbrought']
@@ -143,12 +147,14 @@ class Createrecord(Resource):
 
         return {"message": "record created"}, 201
 
+
 class Allsales(Resource):
 
     def get(self):
         ''' get all salerecords '''
 
         return {'Allsales': [sale.serialize() for sale in sales]}, 200
+
 
 class Singlesale(Resource):
     '''class to get a specific record'''
@@ -162,6 +168,8 @@ class Singlesale(Resource):
             return {"Salesrecord": sale.serialize()}
 
         return {'message': "Not found"}, 404
+
+
 class SignUp(Resource):
 
     parser = reqparse.RequestParser()
@@ -180,13 +188,11 @@ class SignUp(Resource):
 
         validate = Validators()
 
-
         if not validate.valid_email(email):
             return {"message": "enter valid email"}, 400
 
         if not validate.valid_password(password):
             return {"message": "password should start with a capital letter and include a number"}, 400
-
 
         if User().get_by_email(email):
             return {"message": "user with {} already exists".format(email)}, 400
@@ -210,7 +216,6 @@ class Login(Resource):
 
         email = data["email"]
         password = data["password"]
-
 
         user = User().get_by_email(email)
 

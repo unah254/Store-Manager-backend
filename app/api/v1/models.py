@@ -1,10 +1,8 @@
-from flask import Flask, request
-from flask_restful import Resource, Api, reqparse
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Flask
+from werkzeug.security import generate_password_hash
 
-from flask_jwt_extended import create_access_token
 
-from jwt import ExpiredSignatureError, InvalidTokenError
+
 
 # imported module to validate the inputs
 from .utils import Validators
