@@ -1,8 +1,7 @@
 # Store-Manager-backend
 Store app with api endpoints
 
-[![Build Status](https://travis-ci.org/unah254/Store-Manager-backend.svg?branch=master)](https://travis-ci.org/unah254/Store-Manager-backend)      [![Coverage Status](https://coveralls.io/repos/github/unah254/Store-Manager-backend/badge.svg?branch=ch-api-v1-161337541)](https://coveralls.io/github/unah254/Store-Manager-backend?branch=ch-api-v1-161337541)
-
+[![Build Status](https://travis-ci.org/unah254/Store-Manager-backend.svg?branch=ch-api-v1-161337541)](https://travis-ci.org/unah254/Store-Manager-backend)      [![Coverage Status](https://coveralls.io/repos/github/unah254/Store-Manager-backend/badge.svg?branch=ch-api-v1-161337541)](https://coveralls.io/github/unah254/Store-Manager-backend?branch=ch-api-v1-161337541)                      [![Maintainability](https://api.codeclimate.com/v1/badges/90d93599d1107b23f1a1/maintainability)](https://codeclimate.com/github/unah254/Store-Manager-backend/maintainability)
 
 # API Documentation
 
