@@ -25,8 +25,10 @@ def create_app(config_name):
     app.config['PROPAGATE_EXCEPTIONS'] = True
 
     JWT.init_app(app)
-    
+
     api = Api(app)
+    JWT._set_error_handler_callbacks(api)
+    
     api.add_resource(Createproduct, '/api/v1/products')
     api.add_resource(Allproducts, '/api/v1/products')
     api.add_resource(Singleproduct, '/api/v1/products/<int:id>')
