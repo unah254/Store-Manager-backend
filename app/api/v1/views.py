@@ -1,36 +1,19 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from flask_jwt_extended import create_access_token
+
+from jwt import ExpiredSignatureError, InvalidTokenError
+
+import datetime
+
 # imported module to validate the inputs
 from .utils import Validators
+from .models import Product, Salesrecord, User, Users
 
 # list to store products
 products = []
-
-
-class Product:
-    '''product class to initialize products and display in json'''
-    def __init__(self, name=None, price=None, category=None):
-        '''create an instance of a new product'''
-        self.id = len(products)+1
-        self.name = name
-        self.price = price
-        self.category = category
-
-    def serialize(self):
-        '''to get created data and display in json format'''
-        return dict(
-            id=self.id,
-            name=self.name,
-            price=self.price,
-            category=self.category
-        )
-
-    def get_id(self, product_id):
-        '''display specific product id'''
-        for product in products:
-            if product.id == product_id:
-                return product
-
 class Createproduct(Resource):
     '''to get input from user and create a new product'''
     parser = reqparse.RequestParser()
@@ -105,35 +88,6 @@ class Singleproduct(Resource):
         return {'message': "Not found"}, 404
 
 sales=[]
-class Salesrecord:
-    '''sales class to initialize records and display in json'''
-    def __init__(self, name=None, price=None,category=None, quantitysold=None, amountbrought=None):
-        '''create an instance of a new sale record'''
-        self.id = len(sales)+1
-        self.name = name
-        self.price = price
-        self.quantitysold = quantitysold
-        self.category = category
-        self.amountbrought = amountbrought
-
-    def serialize(self):
-        '''to get created data and display in json format'''
-        return dict(
-            id=self.id,
-            name=self.name,
-            price=self.price,
-            quantitysold=self.quantitysold,
-            category=self.category,
-            amountbrought=self.amountbrought
-        )
-
-    def get_id(self, sales_id):
-        '''display specific sales id'''
-        for Salesrecord in sales:
-            if Salesrecord.id == sales_id:
-                return Salesrecord
-
-
 class Createrecord(Resource):
     '''to get input from user and create a new record'''
     parser = reqparse.RequestParser()
@@ -210,3 +164,60 @@ class Singlesale(Resource):
             return {"Salesrecord": sale.serialize()}
 
         return {'message': "Not found"}, 404
+class SignUp(Resource):
+
+    parser = reqparse.RequestParser()
+
+    parser.add_argument("email", type=str, required=True,
+                        help="This field can not be left bank")
+    parser.add_argument("password", type=str, required=True,
+                        help="This field can not be left bank")
+
+    def post(self):
+        """ Create a new user"""
+        data = SignUp.parser.parse_args()
+
+        email = data["email"]
+        password = data["password"]
+
+        validate = Validators()
+
+
+        if not validate.valid_email(email):
+            return {"message": "enter valid email"}, 400
+
+        if not validate.valid_password(password):
+            return {"message": "password should start with a capital letter and include a number"}, 400
+
+
+        if User().get_by_email(email):
+            return {"message": "user with {} already exists".format(email)}, 400
+
+        user = User(email, password)
+        Users.append(user)
+
+        return {"message": "user {} created successfully".format(email)}, 201
+
+
+class Login(Resource):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument("email", type=str, required=True,
+                        help="This field can not be left bank")
+    parser.add_argument("password", type=str, required=True,
+                        help="This field can not be left bank")
+
+    def post(self):
+        data = Login.parser.parse_args()
+
+        email = data["email"]
+        password = data["password"]
+
+
+        user = User().get_by_email(email)
+
+        if user and check_password_hash(user.password_hash, password):
+            expires = datetime.timedelta(minutes=30)
+            token = create_access_token(user.email, expires_delta=expires)
+            return {'token': token, 'message': 'successfully logged'}, 200
+        return {'message': 'user not found'}, 404

@@ -5,8 +5,7 @@ from flask_jwt_extended import JWTManager
 from instance.config import app_config
 import os
 
-from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord, Allsales, Singlesale
-from .api.v1.auth import Login, SignUp
+from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord, Allsales, Singlesale, Login, SignUp
 
 jwt = JWTManager()
 
