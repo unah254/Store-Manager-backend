@@ -29,6 +29,8 @@ def create_app(config_name):
     api.add_resource(Createrecord, '/api/v1/sales')
     api.add_resource(Allsales, '/api/v1/sales')
     api.add_resource(Singlesale, '/api/v1/sales/<int:id>')
+    api.add_resource(Login, '/api/v1/login')
+    api.add_resource(SignUp, '/api/v1/signup')
 
 
 
