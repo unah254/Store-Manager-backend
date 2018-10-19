@@ -20,6 +20,6 @@ class Validators:
 
     def valid_email(self, email):
         """ validate for email """
-        return re.match("^[^@]+@[^@]+\.[^@]+$", email)
+        return re.match("^[^@]+@[^@]+[^@]+$", email)
 
     

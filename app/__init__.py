@@ -1,13 +1,16 @@
 # imported necessary modules to create flask microframework
+import os
 from flask import Flask
-from flask_restful import  Api
+from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from instance.config import app_config
-import os
 
-from .api.v1.views import Createproduct, Allproducts, Singleproduct, Createrecord, Allsales, Singlesale, Login, SignUp
 
-jwt = JWTManager()
+from .api.v1.views import Createproduct, Allproducts, Singleproduct
+from .api.v1.views import Createrecord, Allsales, Singlesale, Login, SignUp
+
+JWT = JWTManager()
+
 
 def create_app(config_name):
     """
@@ -21,9 +24,8 @@ def create_app(config_name):
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['PROPAGATE_EXCEPTIONS'] = True
 
-    jwt.init_app(app)
+    JWT.init_app(app)
     
-
     api = Api(app)
     api.add_resource(Createproduct, '/api/v1/products')
     api.add_resource(Allproducts, '/api/v1/products')
@@ -34,10 +36,4 @@ def create_app(config_name):
     api.add_resource(Login, '/api/v1/login')
     api.add_resource(SignUp, '/api/v1/signup')
 
-
-
-        
-
-    
-    
     return app

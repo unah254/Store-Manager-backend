@@ -10,7 +10,7 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 from .utils import Validators
 
 # list to store products
-products = []
+PRODUCTS = []
 
 
 
@@ -18,7 +18,7 @@ class Product:
     '''product class to initialize products and display in json'''
     def __init__(self, name=None, price=None, category=None):
         '''create an instance of a new product'''
-        self.id = len(products)+1
+        self.id = len(PRODUCTS)+1
         self.name = name
         self.price = price
         self.category = category
@@ -34,14 +34,15 @@ class Product:
 
     def get_id(self, product_id):
         '''display specific product id'''
-        for product in products:
+        for product in PRODUCTS:
             if product.id == product_id:
                 return product
 
 sales=[]
+
 class Salesrecord:
     '''sales class to initialize records and display in json'''
-    def __init__(self, name=None, price=None,category=None, quantitysold=None, amountbrought=None):
+    def __init__(self, name=None, price=None, category=None, quantitysold=None, amountbrought=None):
         '''create an instance of a new sale record'''
         self.id = len(sales)+1
         self.name = name
@@ -67,6 +68,7 @@ class Salesrecord:
             if Salesrecord.id == sales_id:
                 return Salesrecord
 Users = []
+
 class User:
 
     user_id = 1

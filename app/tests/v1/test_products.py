@@ -4,8 +4,6 @@ from flask import jsonify
 from unittest import TestCase
 from app import create_app
 
-from app.api.v1.views import Createproduct, Allproducts, Singleproduct, Allsales, Createrecord, Singlesale
-
 class TestProducts(TestCase):
     '''Test the products'''
 
