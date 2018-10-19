@@ -3,7 +3,7 @@ from flask import Flask
 
 from flask_restful import Resource, reqparse
 
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_jwt_extended import create_access_token
 
@@ -13,7 +13,7 @@ import datetime
 # local imports
 
 from .utils import Validators
-
+Users = []
 class User:
 
     user_id = 1
@@ -34,6 +34,7 @@ class User:
         for user in Users:
             if user.email == email:
                 return user
+    
 
 class SignUp(Resource):
 
@@ -51,7 +52,7 @@ class SignUp(Resource):
         email = data["email"]
         password = data["password"]
 
-        validate = validators.Validators()
+        validate = Validators()
 
 
         if not validate.valid_email(email):
@@ -61,12 +62,11 @@ class SignUp(Resource):
             return {"message": "password should start with a capital letter and include a number"}, 400
 
 
-        if User().fetch_by_email(email):
+        if User().get_by_email(email):
             return {"message": "user with {} already exists".format(email)}, 400
 
         user = User(email, password)
-
-        user.add()
+        Users.append(user)
 
         return {"message": "user {} created successfully".format(email)}, 201
 
@@ -85,9 +85,8 @@ class Login(Resource):
         email = data["email"]
         password = data["password"]
 
-        validate = validators.Validators()
 
-        user = User().fetch_by_email(email)
+        user = User().get_by_email(email)
 
         if not user:
             return {'message': 'user not found'}, 404

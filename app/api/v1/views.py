@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 # imported module to validate the inputs
 from .utils import Validators
@@ -9,12 +9,11 @@ products = []
 
 class Product:
     '''product class to initialize products and display in json'''
-    def __init__(self, name=None, price=None, description=None, category=None):
+    def __init__(self, name=None, price=None, category=None):
         '''create an instance of a new product'''
         self.id = len(products)+1
         self.name = name
         self.price = price
-        self.description = description
         self.category = category
 
     def serialize(self):
@@ -23,7 +22,6 @@ class Product:
             id=self.id,
             name=self.name,
             price=self.price,
-            description=self.description,
             category=self.category
         )
 
@@ -44,41 +42,34 @@ class Createproduct(Resource):
     )
 
     parser.add_argument(
-        'description',
-        type=str,
+        'price',
+        type=float,
         required=True,
         help="This field cannot be left blank"
     )
 
-    parser.add_argument(
-        'price',
-        type=int,
-        required=True,
-        help="This field cannot be left blank!"
-    )
 
     parser.add_argument(
         'category',
-        type=int,
+        type=str,
         required=True,
         help="This field cannot be left blank!"
     )
 
     def post(self):
         ''' add new product'''
-        data = Createproduct.parser.parse_args()
+        data = request.get_json()
 
         name = data['name']
-        description = data['description']
-        price = data['price']
+        price= data['price']
         category = data['category']
 
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
-        if not Validators().valid_product_description(description):
-            return {'message': 'Enter valid product description'}, 400
+        # if not Validators().valid_product_description(description):
+        #     return {'message': 'Enter valid product description'}, 400
 
-        product = Product(name, price, description, category)
+        product = Product(name, price, category)
 
         products.append(product)
 
