@@ -20,6 +20,7 @@ def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+    app.config['PROPAGATE_EXCEPTIONS'] = True
 
     jwt.init_app(app)
     
