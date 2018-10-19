@@ -88,12 +88,8 @@ class Login(Resource):
 
         user = User().get_by_email(email)
 
-        if not user:
-            return {'message': 'user not found'}, 404
-
-        if not check_password_hash(user.password_hash, password):
-            return {'message': 'incorrect password'}, 401
-
-        expires = datetime.timedelta(minutes=30)
-        token = create_access_token(user.serialize(), expires_delta=expires)
-        return {'token': token, 'message': 'successfully logged'}, 200
+        if user and check_password_hash(user.password_hash, password):
+            expires = datetime.timedelta(minutes=30)
+            token = create_access_token(user.email, expires_delta=expires)
+            return {'token': token, 'message': 'successfully logged'}, 200
+        return {'message': 'user not found'}, 404
