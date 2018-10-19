@@ -4,8 +4,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_jwt_extended import create_access_token
 
-from jwt import ExpiredSignatureError, InvalidTokenError
-
 import datetime
 
 # imported module to validate the inputs
