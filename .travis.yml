@@ -2,7 +2,7 @@ language: python
 
 python:
 
-  - "3.7-dev"
+  - "3.7.0"
 
 before_script:  
  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  
@@ -20,7 +20,7 @@ script:
 
  after_script:
   - coverage xml
-  - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_PYTHON_VERSION" == "3.7-dev" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_PYTHON_VERSION" == "3.7.0" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
  
 after_success:
 
