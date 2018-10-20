@@ -1,28 +1,19 @@
 language: python
 
-python:
+python:	
+ - "3.7-dev"	
 
-  - "3.7-dev"
+cache: pip	
 
-before_script:  
- - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  
- - chmod +x ./cc-test-reporter   
- - ./cc-test-reporter before-build
+install:	
+ - pip install -r requirements.txt
+ - pip install codeclimate-test-reporter
 
-install:
-
-  - pip install -r requirements.txt
-  
-
-script:
-
- -  python -m pytest --cov=app
-
- after_script:
-  - coverage xml
-  - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_PYTHON_VERSION" == "3.7-dev" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+script:	
+ 
+ - pytest --cov-report term-missing --cov=app 
+ - coveralls
  
 after_success:
-
-  - coveralls
-  
+ - coveralls
+ - codeclimate-test-reporter
