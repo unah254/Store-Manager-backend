@@ -71,8 +71,8 @@ class User:
 
     user_id = 1
 
-    def __init__(self, email=None, password=None,
-                 is_admin=None):
+    def __init__(self, email="grace@admin.com", password="123ht",
+                 is_admin=True):
 
         self.email = email
         if password:
