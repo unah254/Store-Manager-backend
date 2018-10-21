@@ -73,6 +73,29 @@ class TestUser(unittest.TestCase):
         response_data = json.loads(response.data.decode('utf-8'))
 
         print(response_data)
+    
+    def login_admin(self):
+        """ method to login admin """
+        data = {"email": "unah@admin.com",
+                "password": "unah123",
+                "admin":"True"
+                }
+        response = self.client.post(
+            "api/v2/login",
+            data=json.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+        return jsonify({"meassage": "succesfulyy logged"})
+
+        response_data = json.loads(response.data.decode("utf-8"))
+
+        print(response_data)
+
+    def get_token_as_admin(self):
+        """get token """
+        response = self.login_admin()
+        token = json.loads(response.data).get("token", None)
+        return token
 
     def test_non_existing_user_login(self):
         """ Test if user does not exist """
