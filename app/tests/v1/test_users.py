@@ -95,22 +95,20 @@ class TestUser(unittest.TestCase):
                          "message"], "user not found")
 
     def test_invalid_email(self):
+        """ Test invalid email """
         data = {
-            "email": "unah",
-            "password": "unah123",
-            "is_admin": 1
+            "email": "greisunah",
+            "password": "Unah127"
         }
 
         response = self.client.post(
-            "api/v1/signup",
+            "api/v2/signup",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
         )
+        return jsonify({"meassage": "enter a valid email"})
 
-        self.assertEqual(response.status_code, 400)
-
-        self.assertEqual(json.loads(response.data)[
-                         "message"], "enter valid email")
+        response_data = json.loads(response.data.decode("utf-8"))
 
     def test_invalid_password(self):
         data = {
