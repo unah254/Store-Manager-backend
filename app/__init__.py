@@ -8,6 +8,7 @@ from instance.config import app_config
 
 from .api.v1.views import Createproduct, Allproducts, Singleproduct
 from .api.v1.views import Createrecord, Allsales, Singlesale, Login, SignUp
+from .api.v1.views import User, Users
 
 JWT = JWTManager()
 
@@ -25,6 +26,9 @@ def create_app(config_name):
     app.config['PROPAGATE_EXCEPTIONS'] = True
 
     JWT.init_app(app)
+
+    user = User( "admin@gmail.com", "sifuma123",admin=True)
+    Users.append(user)
 
     api = Api(app)
     api.add_resource(Createproduct, '/api/v1/products')
