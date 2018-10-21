@@ -100,15 +100,11 @@ class Createrecord(Resource):
                         help="This field cannot be left blank")
     
 
-    parser.add_argument("category", type=str, required=True, 
-                        help="This field cannot be left blank!")
-    
+    parser.add_argument("quantitysold", type=int, required=True,
+                         help="This field cannot be left blank!")
 
-    # parser.add_argument("quantitysold", type=int, required=True,
-    #                      help="This field cannot be left blank!")
-
-    # parser.add_argument("amountbrought", type=str, required=True,
-    #                      help="This field cannot be left blank!")
+    parser.add_argument("amountbrought", type=str, required=True,
+                         help="This field cannot be left blank!")
     
 
     def post(self):
@@ -118,14 +114,13 @@ class Createrecord(Resource):
 
         name = data['name']
         price= data['price']
-        category = data['category']
-        # quantitysold = data['quantitysold']
-        # amountbrought = data['amountbrought']
+        quantitysold = data['quantitysold']
+        amountbrought = data['amountbrought']
 
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
 
-        sale = Salesrecord(name, price, category)
+        sale = Salesrecord(name, price, quantitysold, amountbrought)
 
         sales.append(sale)
 
@@ -162,6 +157,9 @@ class SignUp(Resource):
                         help="This field can not be left bank")
     parser.add_argument("password", type=str, required=True,
                         help="This field can not be left bank")
+    parser.add_argument("is_admin", type=int, required=True,
+                        help="This field can not be left bank")
+
 
     def post(self):
         """ Create a new user"""
@@ -169,6 +167,7 @@ class SignUp(Resource):
 
         email = data["email"]
         password = data["password"]
+        is_admin = data["is_admin"]
 
         validate = Validators()
 
@@ -179,6 +178,8 @@ class SignUp(Resource):
         if not validate.valid_password(password):
             return {"message": "password should start with a capital letter and include a number"}, 400
 
+        if is_admin not in range(0, 2):
+            return {"message": " must be one or zero"}, 400
 
         if User().get_by_email(email):
             return {"message": "user with {} already exists".format(email)}, 400

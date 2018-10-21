@@ -43,12 +43,11 @@ class Salesrecord:
     
     sale_record_id = 1
     
-    def __init__(self, name=None, price=None, category=None, quantitysold=None, amountbrought=None):
+    def __init__(self, name=None, price=None, quantitysold=None, amountbrought=None):
         '''create an instance of a new sale record'''
         self.id = Salesrecord.sale_record_id
         self.name = name
         self.price = price
-        self.category = category
         self.quantitysold = quantitysold
         self.amountbrought = amountbrought
 
@@ -60,7 +59,6 @@ class Salesrecord:
             id=self.id,
             name=self.name,
             price=self.price,
-            category=self.category,
             quantitysold=self.quantitysold,
             amountbrought=self.amountbrought
         )
