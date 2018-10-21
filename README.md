@@ -16,10 +16,10 @@ https://store-product-management-app.herokuapp.com/
 | --------------------------  | --------------|------------------------------ |----------------|
 |  api/v1/products            | GET           | fetch all available products .|Admin/Attendant |
 | api/v1/products/<int:Id>    | GET           | fetch  a specific order       |Admin/attendant |
-| api/v1/products             | POST          | add a new product .           |Admin/attendant |
-| api/v1/sales                | POST          | add a new sales record .      |Admin .         |
+| api/v1/products             | POST          | add a new product .           |Admin           |
+| api/v1/sales                | POST          | add a new sales record .      |Attendant       |
 | api/v1/sales/<int:Id>       | GET           | fetch a specific sale record  |Admin/ creator  |
-| api/v1/sales                | GET .         | fetch all sales record .      |Admin .         |
+| api/v1/sales                | GET .         | fetch all sales record .      |Admin           |
 | api/v1/sales/<int:Id> .     | DELETE .      | delete a specific sale record |Admin           |
 | api/v1/products/<int:Id> .  |DELETE .       | delete a specific product .   |Admin           |
 | api/v1/signup               | POST .        | register a new user .         |Admin/attendant |
