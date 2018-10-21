@@ -40,12 +40,9 @@ products = []
 class Createproduct(Resource):
     '''to get input from user and create a new product'''
     parser = reqparse.RequestParser()
-    parser.add_argument(
-        'name',
-        type=str,
-        required=True,
-        help="This field cannot be left blank"
-    )
+    parser.add_argument('name', type=str, required=True,
+                         help="This field cannot be left blank")
+   
 
     parser.add_argument(
         'price',
