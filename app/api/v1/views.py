@@ -63,8 +63,7 @@ class Createproduct(Resource):
             return {'message': 'Enter valid product name'}, 400
         # if not Validators().valid_product_description(description):
         #     return {'message': 'Enter valid product description'}, 400
-        if not type(price) != int:
-            return {"message": "price should be an integer"}, 400
+        
         product = Product(name, price, category)
 
         products.append(product)
