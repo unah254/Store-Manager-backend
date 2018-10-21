@@ -40,28 +40,33 @@ sales=[]
 
 class Salesrecord:
     '''sales class to initialize records and display in json'''
+    
+    sale_record_id = 1
+    
     def __init__(self, name=None, price=None, category=None, quantitysold=None, amountbrought=None):
         '''create an instance of a new sale record'''
-        self.id = len(sales)+1
+        self.id = Salesrecord.sale_record_id
         self.name = name
         self.price = price
-        self.quantitysold = quantitysold
         self.category = category
+        self.quantitysold = quantitysold
         self.amountbrought = amountbrought
 
+        Salesrecord.sale_record_id += 1
+
     def serialize(self):
-        '''to get created data and display in json format'''
+        ''' serialize a Salesrecord object to a dictionary'''
         return dict(
             id=self.id,
             name=self.name,
             price=self.price,
-            quantitysold=self.quantitysold,
             category=self.category,
+            quantitysold=self.quantitysold,
             amountbrought=self.amountbrought
         )
 
-    def get_id(self, sales_id):
-        '''display specific sales id'''
+    def get_by_id(self, sales_id):
+        '''get records by id'''
         for Salesrecord in sales:
             if Salesrecord.id == sales_id:
                 return Salesrecord

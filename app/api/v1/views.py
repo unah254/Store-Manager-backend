@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, reqparse
 from werkzeug.security import check_password_hash
 
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 
 
 # imported module to validate the inputs
@@ -37,7 +37,7 @@ class Createproduct(Resource):
         required=True,
         help="This field cannot be left blank!"
     )
-
+    
     def post(self):
         ''' add new product'''
         data = request.get_json()
@@ -93,55 +93,39 @@ sales=[]
 class Createrecord(Resource):
     '''to get input from user and create a new record'''
     parser = reqparse.RequestParser()
-    parser.add_argument(
-        'name',
-        type=str,
-        required=True,
-        help="This field cannot be left blank"
-    )
+    parser.add_argument("name", type=str, required=True,
+                        help="This field cannot be left blank")
 
-    parser.add_argument(
-        'price',
-        type=int,
-        required=True,
-        help="This field cannot be left blank"
-    )
+    parser.add_argument("price", type=float, required=True,
+                        help="This field cannot be left blank")
+    
 
-    parser.add_argument(
-        'category',
-        type=str,
-        required=True,
-        help="This field cannot be left blank!"
-    )
+    parser.add_argument("category", type=str, required=True, 
+                        help="This field cannot be left blank!")
+    
 
-    parser.add_argument(
-        'quantitysold',
-        type=int,
-        required=True,
-        help="This field cannot be left blank!"
-    )
+    # parser.add_argument("quantitysold", type=int, required=True,
+    #                      help="This field cannot be left blank!")
 
-    parser.add_argument(
-        'amountbrought',
-        type=int,
-        required=True,
-        help="This field cannot be left blank!"
-    )
+    # parser.add_argument("amountbrought", type=str, required=True,
+    #                      help="This field cannot be left blank!")
+    
 
     def post(self):
         ''' add new record'''
         data = Createrecord.parser.parse_args()
+        data = request.get_json()
 
         name = data['name']
         price= data['price']
         category = data['category']
-        quantitysold = data['quantitysold']
-        amountbrought = data['amountbrought']
+        # quantitysold = data['quantitysold']
+        # amountbrought = data['amountbrought']
 
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
 
-        sale = Salesrecord(name, price, category, quantitysold, amountbrought)
+        sale = Salesrecord(name, price, category)
 
         sales.append(sale)
 
@@ -162,7 +146,7 @@ class Singlesale(Resource):
     def get(self, id):
         ''' get a specific record '''
 
-        sale = Salesrecord().get_id(id)
+        sale = Salesrecord().get_by_id(id)
 
         if sale:
             return {"Salesrecord": sale.serialize()}
@@ -179,12 +163,14 @@ class SignUp(Resource):
     parser.add_argument("password", type=str, required=True,
                         help="This field can not be left bank")
 
-    def post(self):
+    def post(self, current_user):
         """ Create a new user"""
         data = SignUp.parser.parse_args()
 
+
         email = data["email"]
         password = data["password"]
+        is_admin = False
 
         validate = Validators()
 
@@ -197,7 +183,7 @@ class SignUp(Resource):
         if User().get_by_email(email):
             return {"message": "user with {} already exists".format(email)}, 400
 
-        user = User(email, password)
+        user = User(email, password, is_admin)
         Users.append(user)
 
         return {"message": "user {} created successfully".format(email)}, 201
