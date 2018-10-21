@@ -22,13 +22,6 @@ class Validators:
         """ validate for email """
         return re.match("^[^@]+@[^@]+[^@]+$", email)
 
-    def valid_is_admin(self, is_admin):
-        """ validate is_admin """
-        return re.match("^[0-1]{,1}$", is_admin)
-
-    def valid_price(self, price):
-        """ validate price """
-        return re.match("^[0-9]{3,6}$", price)
     
     def valid_inputs(self, string_inputs):
         """ validate for inputs """

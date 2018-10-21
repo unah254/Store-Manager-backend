@@ -75,12 +75,12 @@ class User:
     user_id = 1
 
     def __init__(self, email=None, password=None,
-                 is_admin=None):
+                 admin=False):
 
         self.email = email
         if password:
             self.password_hash = generate_password_hash(password)
-        self.is_admin = is_admin
+        self.admin = admin
         self.id = User.user_id
 
         User.user_id += 1

@@ -1,14 +1,26 @@
 import datetime
 from flask import Flask, request, jsonify
 from flask_restful import Resource, reqparse
+from functools import wraps
 from werkzeug.security import check_password_hash
 
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 
 # imported module to validate the inputs
 from .utils import Validators
 from .models import Product, Salesrecord, User, Users
+
+def admin_only(f):
+    ''' Restrict access if not admin '''
+    @wraps(f)
+    def wrapper_function(*args, **kwargs):
+        user = User().get_by_email(get_jwt_identity())
+
+        if not user.admin:
+            return {'message': 'Anauthorized access, you must be an admin to access this level'}, 401
+        return f(*args, **kwargs)
+    return wrapper_function
 
 # list to store products
 products = []
@@ -26,7 +38,7 @@ class Createproduct(Resource):
 
     parser.add_argument(
         'price',
-        type=float,
+        type=int,
         required=True,
         help="This field cannot be left blank"
     )
@@ -37,7 +49,8 @@ class Createproduct(Resource):
         required=True,
         help="This field cannot be left blank!"
     )
-    
+    @jwt_required
+    @admin_only
     def post(self):
         ''' add new product'''
         data = request.get_json()
@@ -50,7 +63,8 @@ class Createproduct(Resource):
             return {'message': 'Enter valid product name'}, 400
         # if not Validators().valid_product_description(description):
         #     return {'message': 'Enter valid product description'}, 400
-
+        if not type(price) != int:
+            return {"message": "price should be an integer"}, 400
         product = Product(name, price, category)
 
         products.append(product)
@@ -157,7 +171,7 @@ class SignUp(Resource):
                         help="This field can not be left bank")
     parser.add_argument("password", type=str, required=True,
                         help="This field can not be left bank")
-    parser.add_argument("is_admin", type=int, required=True,
+    parser.add_argument("is_admin", type=bool, required=True,
                         help="This field can not be left bank")
 
 
