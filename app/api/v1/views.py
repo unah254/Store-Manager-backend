@@ -22,6 +22,17 @@ def admin_only(f):
         return f(*args, **kwargs)
     return wrapper_function
 
+def user_only(f):
+    ''' Restrict access if not attendant '''
+    @wraps(f)
+    def wrapper_function(*args, **kwargs):
+        user = User().get_by_email(get_jwt_identity())
+
+        if user.admin:
+            return {'message': 'Anauthorized access, you must be an attendant to access this level'}, 401
+        return f(*args, **kwargs)
+    return wrapper_function
+
 # list to store products
 products = []
 
@@ -91,7 +102,8 @@ class Singleproduct(Resource):
             return {"Products": product.serialize()}
 
         return {'message': "Not found"}, 404
-
+    @jwt_required
+    @admin_only
     def delete(self, id):
         ''' Delete a single product '''
 
@@ -116,10 +128,11 @@ class Createrecord(Resource):
     parser.add_argument("quantitysold", type=int, required=True,
                          help="This field cannot be left blank!")
 
-    parser.add_argument("amountbrought", type=str, required=True,
+    parser.add_argument("amountbrought", type=int, required=True,
                          help="This field cannot be left blank!")
     
-
+    @jwt_required
+    @user_only
     def post(self):
         ''' add new record'''
         data = Createrecord.parser.parse_args()
