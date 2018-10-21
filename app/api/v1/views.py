@@ -163,16 +163,15 @@ class SignUp(Resource):
     parser.add_argument("password", type=str, required=True,
                         help="This field can not be left bank")
 
-    def post(self, current_user):
+    def post(self):
         """ Create a new user"""
         data = SignUp.parser.parse_args()
 
-
         email = data["email"]
         password = data["password"]
-        is_admin = False
 
         validate = Validators()
+
 
         if not validate.valid_email(email):
             return {"message": "enter valid email"}, 400
@@ -180,10 +179,11 @@ class SignUp(Resource):
         if not validate.valid_password(password):
             return {"message": "password should start with a capital letter and include a number"}, 400
 
+
         if User().get_by_email(email):
             return {"message": "user with {} already exists".format(email)}, 400
 
-        user = User(email, password, is_admin)
+        user = User(email, password)
         Users.append(user)
 
         return {"message": "user {} created successfully".format(email)}, 201
