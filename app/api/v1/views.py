@@ -1,7 +1,7 @@
 import datetime
+from functools import wraps
 from flask import Flask, request, jsonify
 from flask_restful import Resource, reqparse
-from functools import wraps
 from werkzeug.security import check_password_hash
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
