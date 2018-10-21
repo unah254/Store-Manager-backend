@@ -12,19 +12,19 @@ https://store-product-management-app.herokuapp.com/
 
 # API Endpoints
 
-| EndPoint                    | Method        | Functionality                 |
-| --------------------------  | --------------|------------------------------ |
-|  api/v1/products            | GET           | fetch all available products .|
-| api/v1/products/<int:Id>    | GET           | fetch  a specific order       |
-| api/v1/products             | POST          | add a new product .           |
-| api/v1/sales                | POST          | add a new sales record .      |
-| api/v1/sales/<int:Id>       | GET           | fetch a specific sale record  |
-| api/v1/sales                | GET .         | fetch all sales record .      |
-| api/v1/sales/<int:Id> .     | DELETE .      | delete a specific sale record |
-| api/v1/products/<int:Id> .  |DELETE .       | delete a specific product .   |
-| api/v1/signup               | POST .        | register a new user .         |
-| api/v1/login .              | POST .        | login a registered user .     |
- ----------------------------    ---------------  -------------------------------
+| EndPoint                    | Method        | Functionality                 | Role           |
+| --------------------------  | --------------|------------------------------ |----------------|
+|  api/v1/products            | GET           | fetch all available products .|Admin/Attendant |
+| api/v1/products/<int:Id>    | GET           | fetch  a specific order       |Admin/attendant |
+| api/v1/products             | POST          | add a new product .           |Admin/attendant |
+| api/v1/sales                | POST          | add a new sales record .      |Admin .         |
+| api/v1/sales/<int:Id>       | GET           | fetch a specific sale record  |Admin/ creator  |
+| api/v1/sales                | GET .         | fetch all sales record .      |Admin .         |
+| api/v1/sales/<int:Id> .     | DELETE .      | delete a specific sale record |Admin           |
+| api/v1/products/<int:Id> .  |DELETE .       | delete a specific product .   |Admin           |
+| api/v1/signup               | POST .        | register a new user .         |Admin/attendant |
+| api/v1/login .              | POST .        | login a registered user .     |Admin/attendant |
+ ----------------------------    ---------------  -----------------------------   ------------
  
 
 # Prerequisites
@@ -50,7 +50,7 @@ https://store-product-management-app.herokuapp.com/
 
    ```$ export APP_SETTINGS=development```
    
-    ```$ export APP_SECRET_KEY="1245th"```
+    ```$ export JWT_SECRET_KEY="1245th"```
 
 - Run the app.
 
@@ -59,3 +59,6 @@ https://store-product-management-app.herokuapp.com/
 # Testing App
 
 ```python -m pytest --cov=app```
+
+# Author
+Grace Unah
