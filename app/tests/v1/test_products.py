@@ -101,18 +101,33 @@ class Testsales(TestCase):
         ''' Test invalid product description '''
 
         product_data = {
-            "name":"Valipro",
-            "description":"****",
-            "price":20
+            "name": "Valipro",
+            "description": "****",
+            "price": 20
         }
 
         self.client.post(
             "/api/v1/product",
             data=json.dumps(product_data),
-            headers={"content-type":"application/json"}
+            headers={"content-type": "application/json"}
         )
-        return jsonify ({"message":"enter valid product description"})
+        return jsonify({"message": "enter valid product description"})
 
+    def test_invalid_product_name(self):
+        ''' Test invalid product description '''
+
+        product_data = {
+            "name": "****",
+            "description": "suitable for podcast",
+            "price": 20
+        }
+
+        self.client.post(
+            "/api/v1/product",
+            data=json.dumps(product_data),
+            headers={"content-type": "application/json"}
+        )
+        return jsonify({"message": "enter valid product name"})
 
 
 def tearDown(self):
