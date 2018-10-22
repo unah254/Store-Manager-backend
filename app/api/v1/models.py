@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash
 from .utils import Validators
 
 # list to store products
-PRODUCTS = []
+products = []
 
 
 
@@ -16,7 +16,7 @@ class Product:
     '''product class to initialize products and display in json'''
     def __init__(self, name=None, price=None, category=None):
         '''create an instance of a new product'''
-        self.id = len(PRODUCTS)+1
+        self.id = len(products)+1
         self.name = name
         self.price = price
         self.category = category
@@ -32,7 +32,7 @@ class Product:
 
     def get_id(self, product_id):
         '''display specific product id'''
-        for product in PRODUCTS:
+        for product in products:
             if product.id == product_id:
                 return product
 

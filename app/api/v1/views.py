@@ -9,32 +9,30 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 # imported module to validate the inputs
 from .utils import Validators
-from .models import Product, Salesrecord, User, Users
+from .models import Product, Salesrecord, User, Users, products
 
-def admin_only(f):
+def admin_only(_f):
     ''' Restrict access if not admin '''
-    @wraps(f)
+    @wraps(_f)
     def wrapper_function(*args, **kwargs):
         user = User().get_by_email(get_jwt_identity())
 
         if not user.admin:
             return {'message': 'Anauthorized access, you must be an admin to access this level'}, 401
-        return f(*args, **kwargs)
+        return _f(*args, **kwargs)
     return wrapper_function
 
-def user_only(f):
+def user_only(_f):
     ''' Restrict access if not attendant '''
-    @wraps(f)
+    @wraps(_f)
     def wrapper_function(*args, **kwargs):
         user = User().get_by_email(get_jwt_identity())
 
         if user.admin:
             return {'message': 'Anauthorized access, you must be an attendant to access this level'}, 401
-        return f(*args, **kwargs)
+        return _f(*args, **kwargs)
     return wrapper_function
 
-# list to store products
-products = []
 
 
 class Createproduct(Resource):
