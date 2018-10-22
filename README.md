@@ -22,7 +22,7 @@ https://store-product-management-app.herokuapp.com/
 | api/v1/sales                | GET .         | fetch all sales record .      |Admin           |
 | api/v1/sales/<int:Id> .     | DELETE .      | delete a specific sale record |Admin           |
 | api/v1/products/<int:Id> .  |DELETE .       | delete a specific product .   |Admin           |
-| api/v1/signup               | POST .        | register a new user .         |Admin/attendant |
+| api/v1/signup               | POST .        | register a new user .         |Admin           |
 | api/v1/login .              | POST .        | login a registered user .     |Admin/attendant |
  ----------------------------    ---------------  -----------------------------   ------------
  
@@ -46,6 +46,10 @@ https://store-product-management-app.herokuapp.com/
 
   ```$ source env/bin/activate``` 
 
+- Install required dependancies
+
+  ```pip install -r requirements.txt```
+  
 - Set environment to development and export Secret key.
 
    ```$ export APP_SETTINGS=development```
