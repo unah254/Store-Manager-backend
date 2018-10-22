@@ -62,7 +62,7 @@ class TestUser(unittest.TestCase):
         }
         self.signup()
 
-        response = self.client.post(
+        self.client.post(
             "api/v1/signup",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
@@ -70,9 +70,6 @@ class TestUser(unittest.TestCase):
         return jsonify({"message": "user with sifuma@gmail.com"
                         " already exists"})
 
-        response_data = json.loads(response.data.decode('utf-8'))
-
-        print(response_data)
     
     def login_admin(self):
         """ method to login admin """
@@ -80,16 +77,14 @@ class TestUser(unittest.TestCase):
                 "password": "unah123",
                 "admin":"True"
                 }
-        response = self.client.post(
-            "api/v2/login",
+        self.client.post(
+            "api/v1/login",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
         )
         return jsonify({"meassage": "succesfulyy logged"})
 
-        response_data = json.loads(response.data.decode("utf-8"))
-
-        print(response_data)
+    
 
     def get_token_as_admin(self):
         """get token """
@@ -124,15 +119,14 @@ class TestUser(unittest.TestCase):
             "password": "Unah127"
         }
 
-        response = self.client.post(
+        self.client.post(
             "api/v2/signup",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
         )
         return jsonify({"meassage": "enter a valid email"})
 
-        response_data = json.loads(response.data.decode("utf-8"))
-
+        
     def test_invalid_password(self):
         data = {
             "email": "kraftymal@gmail.com",
@@ -140,7 +134,7 @@ class TestUser(unittest.TestCase):
             "is_admin": 1
         }
 
-        response = self.client.post(
+        self.client.post(
             "api/v1/signup",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
@@ -148,6 +142,4 @@ class TestUser(unittest.TestCase):
         return jsonify({"message": "password should start with a capital"
                         " letter and include a number"})
 
-        response_data = json.loads(response.data.decode('utf-8'))
-
-        print(response_data)
+        

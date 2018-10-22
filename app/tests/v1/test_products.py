@@ -4,6 +4,7 @@ from flask import jsonify
 from unittest import TestCase
 from app import create_app
 
+
 class TestProducts(TestCase):
     '''Test the products'''
 
@@ -18,7 +19,7 @@ class TestProducts(TestCase):
             "price": 2500,
             "description": "suitable for podcast",
             "category": "Electronics"
-            
+
         }
 
     def test_get_specific_product(self):
@@ -33,7 +34,6 @@ class TestProducts(TestCase):
             "/api/v1/products/1", content_type='application/json')
 
         print(newproduct, response)
-        
 
     def test_get_all_products(self):
         ''' Test to get all products '''
@@ -50,15 +50,13 @@ class TestProducts(TestCase):
     def test_add_new_product(self):
         ''' Test to add new product '''
 
-        response = self.client.post(
+        self.client.post(
             "/api/v1/products",
             data=json.dumps(self.product_data),
-            headers={"content-type":"application/json"}
+            headers={"content-type": "application/json"}
         )
         return jsonify({"message": "product added"}), 201
-        response_data = json.loads(response.data.decode('utf-8'))
 
-        print(response_data)
 
 class Testsales(TestCase):
     '''Test the sales'''
@@ -80,15 +78,12 @@ class Testsales(TestCase):
     def test_create_new_sale_record(self):
         ''' Test to write new sale record '''
 
-        response = self.client.post(
+        self.client.post(
             "/api/v1/sales",
             data=json.dumps(self.record_data),
             headers={"content-type": "application/json"}
         )
         return jsonify({"message": "record created"}), 201
-        response_data = json.loads(response.data.decode('utf-8'))
-
-        print(response_data)
 
     def test_get_all_records(self):
         ''' Test to get all records '''
@@ -101,6 +96,23 @@ class Testsales(TestCase):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.status_code, 404)
+
+    def test_invalid_product_description(self):
+        ''' Test invalid product description '''
+
+        product_data = {
+            "name":"Valipro",
+            "description":"****",
+            "price":20
+        }
+
+        self.client.post(
+            "/api/v1/product",
+            data=json.dumps(product_data),
+            headers={"content-type":"application/json"}
+        )
+        return jsonify ({"message":"enter valid product description"})
+
 
 
 def tearDown(self):
