@@ -21,6 +21,58 @@ class TestProducts(TestCase):
             "category": "Electronics"
 
         }
+    def signup(self):
+        """ signup method"""
+        signup_data = {
+            "email": "greisunah@admin.com",
+            "password": "Unah1234",
+            "is_admin": 1
+        }
+        response = self.client.post(
+            "api/v1/signup",
+            data=json.dumps(signup_data),
+            headers={'content-type': 'application/json'}
+        )
+        return response
+
+    def login_admin(self):
+        """ method to login admin """
+        data = {"email": "unah@admin.com",
+                "password": "unah123",
+                "admin":"True"
+                }
+        self.client.post(
+            "api/v1/login",
+            data=json.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+        return jsonify({"meassage": "succesfulyy logged"})
+
+    def login(self):
+        """ login method """
+        login_data = {
+            "email": "greisunah@admin.com",
+            "password": "Unah1234"
+        }
+        response = self.client.post(
+            "api/v1/login",
+            data=json.dumps(login_data),
+            headers={'content-type': 'application/json'}
+        )
+        return response
+
+    def get_token_as_user(self):
+        """get token """
+        self.signup()
+        response = self.login()
+        token = json.loads(response.data).get("token", None)
+        return token
+
+    def get_token_as_admin(self):
+        """get token """
+        response = self.login_admin()
+        token = json.loads(response.data).get("token", None)
+        return token
 
     def test_get_specific_product(self):
         ''' Test to get single product '''
@@ -55,6 +107,39 @@ class TestProducts(TestCase):
             data=json.dumps(self.product_data),
             headers={"content-type": "application/json"}
         )
+        return jsonify({"message": "product added"}), 201
+
+    def test_get_all_products_as_admin(self):
+        """ Test all product items """
+
+        token = self.get_token_as_admin()
+
+        self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
+            headers={"content-type": "application/json"}
+        )
+
+        response = self.client.get(
+            "api/v1/products",
+            headers={"Authorization": f'Bearer {token}'}
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_new_products_as_admin(self):
+        """ Test add product items """
+
+        token = self.get_token_as_admin()
+
+        self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+
         return jsonify({"message": "product added"}), 201
 
 

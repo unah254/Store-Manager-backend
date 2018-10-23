@@ -46,13 +46,19 @@ class TestUser(unittest.TestCase):
         )
         return response
 
-    def get_token(self):
-        """ get_token method """
+    def get_token_as_user(self):
+        """get token """
         self.signup()
         response = self.login()
         token = json.loads(response.data).get("token", None)
         return token
 
+    def get_token_as_admin(self):
+        """get token """
+        response = self.login_admin()
+        token = json.loads(response.data).get("token", None)
+        return token
+        
     def test_email_exists(self):
         """ Test signup with an existing email """
         data = {
@@ -85,12 +91,6 @@ class TestUser(unittest.TestCase):
         return jsonify({"meassage": "succesfulyy logged"})
 
     
-
-    def get_token_as_admin(self):
-        """get token """
-        response = self.login_admin()
-        token = json.loads(response.data).get("token", None)
-        return token
 
     def test_non_existing_user_login(self):
         """ Test if user does not exist """
