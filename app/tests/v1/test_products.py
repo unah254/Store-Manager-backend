@@ -99,15 +99,6 @@ class TestProducts(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.status_code, 404)
 
-    def test_add_new_product(self):
-        ''' Test to add new product '''
-
-        self.client.post(
-            "/api/v1/products",
-            data=json.dumps(self.product_data),
-            headers={"content-type": "application/json"}
-        )
-        return jsonify({"message": "product added"}), 201
 
     def test_get_all_products_as_admin(self):
         """ Test all product items """
@@ -142,6 +133,28 @@ class TestProducts(TestCase):
 
         return jsonify({"message": "product added"}), 201
 
+    def test_delete_products_as_admin(self):
+        """ Test delete product items """
+
+        token = self.get_token_as_admin()
+
+        self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+        self.client.delete(
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+
+        return jsonify({"message": "product deleted"}), 201
+
 
 class Testsales(TestCase):
     '''Test the sales'''
@@ -159,16 +172,74 @@ class Testsales(TestCase):
             "category": "Electronics",
             "amount brought": 50000,
         }
+    def signup(self):
+        """ signup method"""
+        signup_data = {
+            "email": "greisunah@admin.com",
+            "password": "Unah1234",
+            "is_admin": 1
+        }
+        response = self.client.post(
+            "api/v1/signup",
+            data=json.dumps(signup_data),
+            headers={'content-type': 'application/json'}
+        )
+        return response
 
-    def test_create_new_sale_record(self):
-        ''' Test to write new sale record '''
+    def login(self):
+        """ login method """
+        login_data = {
+            "email": "greisunah@admin.com",
+            "password": "Unah1234"
+        }
+        response = self.client.post(
+            "api/v1/login",
+            data=json.dumps(login_data),
+            headers={'content-type': 'application/json'}
+        )
+        return response
+
+    def login_admin(self):
+        """ method to login admin """
+        data = {"email": "unah@admin.com",
+                "password": "unah123",
+                "admin":"True"
+                }
+        self.client.post(
+            "api/v1/login",
+            data=json.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+        return jsonify({"meassage": "succesfulyy logged"})
+
+    def get_token_as_admin(self):
+        """get token """
+        response = self.login_admin()
+        token = json.loads(response.data).get("token", None)
+        return token
+
+
+    def get_token_as_user(self):
+        """get token """
+        self.signup()
+        response = self.login()
+        token = json.loads(response.data).get("token", None)
+        return token
+
+    def test_add_new_record_as_user(self):
+        """ Test add product items """
+
+        token = self.get_token_as_user()
 
         self.client.post(
-            "/api/v1/sales",
+            "/api/v1/products",
             data=json.dumps(self.record_data),
-            headers={"content-type": "application/json"}
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
         )
-        return jsonify({"message": "record created"}), 201
+
+        return jsonify({"message": "product added"}), 201
 
     def test_get_all_records(self):
         ''' Test to get all records '''
@@ -181,6 +252,19 @@ class Testsales(TestCase):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.status_code, 404)
+
+    def test_get_specific_record(self):
+        ''' Test to get single product '''
+
+        newrecord = self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.record_data),
+            headers={"content-type": "application/json"}
+        )
+        response = self.client.get(
+            "/api/v1/products/1", content_type='application/json')
+
+        print(newrecord, response)
 
     def test_invalid_product_description(self):
         ''' Test invalid product description '''
@@ -214,7 +298,46 @@ class Testsales(TestCase):
         )
         return jsonify({"message": "enter valid product name"})
 
+    def test_delete_records_as_admin(self):
+        """ Test delete product items """
 
+        token = self.get_token_as_admin()
+
+        self.client.post(
+            "/api/v1/sales",
+            data=json.dumps(self.record_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+        self.client.delete(
+            "/api/v1/sales",
+            data=json.dumps(self.record_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+
+        return jsonify({"message": "record deleted"}), 201
+
+    def test_delete_non_existing_record_as_admin(self):
+        """ Test to delete non existing sale record  """
+        token = self.get_token_as_admin()
+
+        self.client.post(
+            "/api/v1/sales",
+            data=json.dumps(self.record_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+        self.client.delete(
+            "api/v1/sales/1",
+            headers={'content-type': 'application/json',
+                     "Authorization": f'Bearer {token}'}
+        )
+
+        return jsonify({"message": "record does not exist"}), 404
 def tearDown(self):
     self.app_context.pop()
 
