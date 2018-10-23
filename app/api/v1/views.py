@@ -226,7 +226,7 @@ class Login(Resource):
         user = User().get_by_email(email)
 
         if user and check_password_hash(user.password_hash, password):
-            expires = datetime.timedelta(minutes=30)
+            expires = datetime.timedelta(days=2)
             token = create_access_token(user.email, expires_delta=expires)
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404

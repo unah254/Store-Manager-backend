@@ -23,6 +23,6 @@ class Validators:
         return re.match("^[^@]+@[^@]+[^@]+$", email)
 
     
-    def valid_inputs(self, string_inputs):
-        """ validate for inputs """
-        return re.match("^[a-zA-Z0-9-\._@ ]+$", string_inputs)
+    # def valid_inputs(self, string_inputs):
+    #     """ validate for inputs """
+    #     return re.match("^[a-zA-Z0-9-\._@ ]+$", string_inputs)
