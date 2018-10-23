@@ -61,20 +61,18 @@ class TestUser(unittest.TestCase):
 
     def test_email_exists(self):
         """ Test signup with an existing email """
-        data = {
+        email_exists_data = {
             "email": "sifuma@gmail.com",
             "password": "Sify1235",
-            "is_admin": 1
+            "admin": 1
         }
-        self.signup()
+        self.login_admin()
 
         self.client.post(
             "api/v1/signup",
-            data=json.dumps(data),
+            data=json.dumps(email_exists_data),
             headers={'content-type': 'application/json'}
         )
-        return jsonify({"message": "user with sifuma@gmail.com"
-                        " already exists"})
 
     
     def login_admin(self):
@@ -83,18 +81,20 @@ class TestUser(unittest.TestCase):
                 "password": "unah123",
                 "admin":"True"
                 }
-        self.client.post(
-            "api/v1/login",
+        res = self.client.post(
+            "http://127.0.0.1:5000/api/v1/login",
             data=json.dumps(data),
             headers={'content-type': 'application/json'}
         )
-        return jsonify({"meassage": "succesfulyy logged"})
+        print (res, "ghjkdk")
+
+        return res
 
     
 
     def test_non_existing_user_login(self):
         """ Test if user does not exist """
-        data = {
+        non_existing_user_data = {
             "email": "greisunah@user.com",
             "password": "Unah127"
         }
@@ -103,7 +103,7 @@ class TestUser(unittest.TestCase):
 
         response = self.client.post(
             "api/v1/login",
-            data=json.dumps(data),
+            data=json.dumps(non_existing_user_data),
             headers={'content-type': 'application/json'}
         )
 
@@ -114,21 +114,21 @@ class TestUser(unittest.TestCase):
 
     def test_invalid_email(self):
         """ Test invalid email """
-        data = {
+        invalid_email_data = {
             "email": "greisunah",
             "password": "Unah127"
         }
 
         self.client.post(
             "api/v2/signup",
-            data=json.dumps(data),
+            data=json.dumps(invalid_email_data),
             headers={'content-type': 'application/json'}
         )
         return jsonify({"meassage": "enter a valid email"})
 
         
     def test_invalid_password(self):
-        data = {
+        invalid_password_data = {
             "email": "kraftymal@gmail.com",
             "password": "krafty123",
             "is_admin": 1
@@ -136,7 +136,7 @@ class TestUser(unittest.TestCase):
 
         self.client.post(
             "api/v1/signup",
-            data=json.dumps(data),
+            data=json.dumps(invalid_password_data),
             headers={'content-type': 'application/json'}
         )
         return jsonify({"message": "password should start with a capital"
