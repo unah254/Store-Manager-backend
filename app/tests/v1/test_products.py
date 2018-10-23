@@ -257,12 +257,12 @@ class Testsales(TestCase):
         ''' Test to get single product '''
 
         newrecord = self.client.post(
-            "/api/v1/products",
+            "/api/v1/sales",
             data=json.dumps(self.record_data),
             headers={"content-type": "application/json"}
         )
         response = self.client.get(
-            "/api/v1/products/1", content_type='application/json')
+            "/api/v1/sales/1", content_type='application/json')
 
         print(newrecord, response)
 

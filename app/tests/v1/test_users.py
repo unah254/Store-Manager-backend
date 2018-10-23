@@ -58,7 +58,7 @@ class TestUser(unittest.TestCase):
         response = self.login_admin()
         token = json.loads(response.data).get("token", None)
         return token
-        
+
     def test_email_exists(self):
         """ Test signup with an existing email """
         data = {
@@ -142,4 +142,31 @@ class TestUser(unittest.TestCase):
         return jsonify({"message": "password should start with a capital"
                         " letter and include a number"})
 
-        
+    def test_incorect_password(self):
+        """ test for incorect password """
+        self.incorects_pass_data = {
+            "username": "kimame",
+            "password": "Kimame1235"
+        }
+        self.signup()
+        self.client.post(
+            "api/v1/login",
+            data=json.dumps(self.incorects_pass_data),
+            headers={'content-type': 'application/json'}
+        )
+
+        return jsonify({"message": "password is incorrect"})
+
+    def test_non_existing_email(self):
+        """ Test non existing email """
+        data = {
+            "email": "gmoh@user.com",
+            "password": "Unah127"
+        }
+
+        self.client.post(
+            "api/v1/login",
+            data=json.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+        return jsonify({"meassage": "email does not exist"})
