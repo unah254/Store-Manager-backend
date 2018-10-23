@@ -25,8 +25,8 @@ class BaseTest(unittest.TestCase):
             "admin": "False"
         }
         self.login_admin_data = {
-            "email": "unah@admin.com",
-            "password": "unah123",
+            "email":"admin@gmail.com",
+	        "password":"sifuma123"
         }
         self.login_data = {
             "email": "greisunah@admin.com",
@@ -49,6 +49,7 @@ class BaseTest(unittest.TestCase):
             "price": 20
         }
         self.invalid_product_description = {
+            "id":1,
             "name": "Valipro",
             "description": "****",
             "price": 20
@@ -80,23 +81,21 @@ class BaseTest(unittest.TestCase):
         return response
     def login_admin(self):
         """ method to login admin """
-        login_admin_data = {"email": "unah@admin.com",
-                "password": "unah123",
-                "admin":"True"
-                }
+        
         res = self.client.post(
             "api/v1/login",
-            data=json.dumps(login_admin_data),
+            data=json.dumps(self.login_admin_data),
             headers={'content-type': 'application/json'}
         )
-        return res
+        data = json.loads(res.data.decode())
+        return data
 
     def login(self):
         """ login method """
         
         response = self.client.post(
             "api/v1/login",
-            data=json.dumps(self.login_data),
+            data=json.loads(self.login_data),
             headers={'content-type': 'application/json'}
         )
         return response
@@ -110,13 +109,12 @@ class BaseTest(unittest.TestCase):
 
     def get_token_as_admin(self):
         """get token """
-        response = self.login_admin()
-        token = json.loads(response.data).get("token", None)
+        token = self.login_admin()
         return token
-    def authenticate_admin(self):
-        response = self.client.post("api/v1/login", data = json.dumps(self.login_admin_data))
+    # def authenticate_admin(self):
+    #     response = self.client.post("api/v1/login", data = json.dumps(self.login_admin_data))
 
-        access_token = json.loads(response.data).get("token", None)
+    #     access_token = json.loads(response.data).get("token", None)
 
-        return access_token
+    #     return access_token
         

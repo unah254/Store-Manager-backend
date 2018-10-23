@@ -52,28 +52,35 @@ class TestProducts(BaseTest):
 
         self.assertEqual(response.status_code, 200)
 
-    # def test_add_new_products_as_admin(self):
-    #     """ Test add product items """
+    def test_add_new_products_as_admin(self):
+        """ Test add product items """
 
-    #     token = self.get_token_as_admin()
+        data = self.login_admin()
 
-    #     response = self.client.post(
-    #         "/api/v1/products",
-    #         data=json.dumps(self.product_data),
-    #         headers={"content-type": "application/json",
-    #                  "Authorization": f'Bearer {token}'
-    #                  }
-    #     )
+        print(data)
+
+        token = data['token']
+
+
+        response = self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.product_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
         
         
-    #     self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201)
 
 
 
     def test_delete_products_as_admin(self):
         """ Test delete product items """
 
-        token = self.get_token_as_admin()
+        data = self.login_admin()
+
+        token = data['token']
 
         self.client.post(
             "/api/v1/products",
@@ -82,15 +89,15 @@ class TestProducts(BaseTest):
                      "Authorization": f'Bearer {token}'
                      }
         )
-        self.client.delete(
-            "/api/v1/products",
+        response = self.client.delete(
+            "/api/v1/products/1",
             data=json.dumps(self.product_data),
             headers={"content-type": "application/json",
                      "Authorization": f'Bearer {token}'
                      }
         )
-
-        return jsonify({"message": "product deleted"}), 201
+        self.assertEqual(response.status_code, 200)
+        
 
 
 class Testsales(BaseTest):
@@ -121,46 +128,45 @@ class Testsales(BaseTest):
 
         print(newrecord, response)
 
-    def test_invalid_product_description(self):
-        ''' Test invalid product description '''
-
-        invalid_product_description = {
-            "name": "Valipro",
-            "description": "****",
-            "price": 20
-        }
-
-        self.client.post(
-            "/api/v1/product",
-            data=json.dumps(invalid_product_description),
-            headers={"content-type": "application/json"}
-        )
-        return jsonify({"message": "enter valid product description"})
-
-    # def test_invalid_product_name(self):
+    # def test_invalid_product_description(self):
     #     ''' Test invalid product description '''
 
-    #     invalid_product_data = {
-    #         "name": "****",
-    #         "description": "suitable for podcast",
-    #         "price": 20
-    #     }
+    #     data = self.login_admin()
 
-    #     response = self.client.post(
-    #         "/api/v1/products",
-    #         data=json.dumps(invalid_product_data),
-    #         headers={
-    #             "content-type": "application/json",
-    #             # "Authorization": f'Bearer'{token}
+    #     token = data['token']
+
+    #     res = self.client.post(
+    #         "/api/v1/product/1",
+    #         data=json.dumps(self.invalid_product_description),
+    #         headers={"content-type": "application/json",
+    #                  "Authorization": f'Bearer {token}'
     #         }
     #     )
-    #     self.assertEqual(response.data, "enter valid product name", 400)
-    #     print(response)
+    #     self.assertEqual(res.status_code, 400)
+      
+
+    def test_invalid_product_name(self):
+        ''' Test invalid product description '''
+
+        data = self.login_admin()
+
+        token = data['token']
+
+        response = self.client.post(
+            "/api/v1/products",
+            data=json.dumps(self.invalid_product_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+        self.assertEqual(response.status_code, 400)
+        print(response)
 
     def test_delete_records_as_admin(self):
         """ Test delete product items """
 
-        token = self.get_token_as_admin()
+        data = self.login_admin()
+        token = data['token']
 
         self.client.post(
             "/api/v1/sales",
@@ -169,19 +175,20 @@ class Testsales(BaseTest):
                      "Authorization": f'Bearer {token}'
                      }
         )
-        self.client.delete(
-            "/api/v1/sales",
+        response = self.client.delete(
+            "/api/v1/sales/1",
             data=json.dumps(self.record_data),
             headers={"content-type": "application/json",
                      "Authorization": f'Bearer {token}'
                      }
         )
 
-        return jsonify({"message": "record deleted"}), 201
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_non_existing_record_as_admin(self):
         """ Test to delete non existing sale record  """
-        token = self.get_token_as_admin()
+        data = self.login_admin()
+        token = data['token']
 
         self.client.post(
             "/api/v1/sales",
@@ -190,13 +197,13 @@ class Testsales(BaseTest):
                      "Authorization": f'Bearer {token}'
                      }
         )
-        self.client.delete(
+        response = self.client.delete(
             "api/v1/sales/1",
             headers={'content-type': 'application/json',
                      "Authorization": f'Bearer {token}'}
         )
 
-        return jsonify({"message": "record does not exist"}), 404
+        self.assertEqual(response.status_code, 404)
 def tearDown(self):
     self.app_context.pop()
 

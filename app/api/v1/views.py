@@ -17,6 +17,8 @@ def admin_only(_f):
     def wrapper_function(*args, **kwargs):
         user = User().get_by_email(get_jwt_identity())
 
+        print(user)
+
         if not user.admin:
             return {'message': 'Anauthorized access, you must be an admin to access this level'}, 401
         return _f(*args, **kwargs)
@@ -168,7 +170,16 @@ class Singlesale(Resource):
             return {"Salesrecord": sale.serialize()}
 
         return {'message': "Not found"}, 404
+    @jwt_required
+    @admin_only
+    def delete(self, id):
+        ''' Delete a single record '''
 
+        record = Salesrecord().get_by_id(id)
+        if record:
+            sales.remove(record)
+            return {'message': "Deleted"}, 200
+        return {'message': "Not found"}, 404
 
 class SignUp(Resource):
 
@@ -230,3 +241,4 @@ class Login(Resource):
             token = create_access_token(user.email, expires_delta=expires)
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404
+    
