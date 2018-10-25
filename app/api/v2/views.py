@@ -4,10 +4,11 @@ from flask_restful import Resource, reqparse
 
 from functools import wraps
 from werkzeug.security import check_password_hash
+from flask import Flask, request, jsonify
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # local imports
-from .models import User, Users
+from .models import User, Users, ProductItem, Products
 from .utils import Validators
 
 
@@ -98,3 +99,44 @@ class Login(Resource):
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404
     
+class Createproduct(Resource):
+    '''to get input from user and create a new product'''
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True,
+                         help="This field cannot be left blank")
+   
+
+    parser.add_argument('price', type=int, required=True,
+                        help="This field cannot be left blank")
+    
+
+    parser.add_argument('category', type=str, required=True,
+                        help="This field cannot be left blank!")
+    
+    @jwt_required
+    @admin_only
+    def post(self):
+        ''' add new product'''
+        data = request.get_json()
+
+        name = data['name']
+        price = data['price']
+        category = data['category']
+
+        if not Validators().valid_product_name(name):
+            return {'message': 'Enter valid product name'}, 400
+        
+        product = ProductItem(name, price, category)
+
+        Products.append(product)
+
+        return {"message": "product added"}, 201
+
+
+class Allproducts(Resource):
+
+    def get(self):
+        ''' get all products '''
+
+        return {'Allproducts': [product.serialize() for product in Products]}, 200
+
