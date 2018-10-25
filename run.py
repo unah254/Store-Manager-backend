@@ -4,7 +4,7 @@ import click
 
 from app import create_app
 
-from app.api.v2.models import User
+from app.api.v2.models import User, Users
 
 #config_name = os.getenv('APP_SETTINGS')
 app = create_app(os.getenv('APP_SETTINGS') or 'development')
