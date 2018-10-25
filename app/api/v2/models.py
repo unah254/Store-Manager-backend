@@ -43,7 +43,7 @@ class StoreDatabase:
     def close(self):
         self.cur.close()
 
-        # update table products set category = 'food' where product_id = 10;
+Users=[]       # update table products set category = 'food' where product_id = 10;
 class User(StoreDatabase):
 
     def __init__(self, email=None, password=None, admin=False):
@@ -53,11 +53,11 @@ class User(StoreDatabase):
                 self.password_hash = generate_password_hash(password)
                 self.admin = admin
 
-    def create(self, schema):
+    def create(self):
         """ create table users """
         self.create_table(
             """
-            CREATE TABLE users(
+            CREATE TABLE IF NOT EXISTS users(
                 id serial PRIMARY KEY,
                 email  VARCHAR NOT NULL,
                 password VARCHAR NOT NULL,
