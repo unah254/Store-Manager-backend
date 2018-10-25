@@ -81,8 +81,7 @@ class TestProducts(BaseTest):
         data = self.login_admin()
 
         token = data['token']
-
-        self.client.post(
+        response = self.client.post(
             "/api/v1/products",
             data=json.dumps(self.product_data),
             headers={"content-type": "application/json",
@@ -90,7 +89,7 @@ class TestProducts(BaseTest):
                      }
         )
         response = self.client.delete(
-            "/api/v1/products/1",
+            f"/api/v1/products/{response.product.id}",
             data=json.dumps(self.product_data),
             headers={"content-type": "application/json",
                      "Authorization": f'Bearer {token}'
