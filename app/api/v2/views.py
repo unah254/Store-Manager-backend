@@ -126,7 +126,7 @@ class CreateProduct(Resource):
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
         
-        product = ProductItem(name, price, category)
+        product = ProductItem(name=name, category=category, price=price)
 
         Products.append(product)
 
@@ -144,7 +144,7 @@ class SingleProduct(Resource):
     '''class to get a specific product'''
 
     def get(self, id):
-        ''' get a specific order '''
+        ''' get a specific product '''
 
         product = ProductItem().fetch_by_id(id)
 
@@ -162,3 +162,8 @@ class SingleProduct(Resource):
             Products.remove(product)
             return {'message': "Deleted"}, 200
         return {'message': "Not found"}, 404
+
+    def put(self, product_id):
+        """ Modify a product """
+        product = ProductItem().fetch_by_id(id)
+        return product
