@@ -26,9 +26,9 @@ class StoreDatabase:
         # open cursor to enable operation of database
         self.cur = self.conn.cursor()
 
-    def create_table(self):
+    def create_table(self,schema):
         """ method to create a table """
-        # self.cur.execute(schema)
+        self.cur.execute(schema)
         self.save()
 
     def drop_table(self, name):
@@ -53,7 +53,7 @@ class User(StoreDatabase):
                 self.password_hash = generate_password_hash(password)
                 self.admin = admin
 
-    def create(self):
+    def create(self, schema):
         """ create table users """
         self.create_table(
             """
