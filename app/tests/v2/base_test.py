@@ -18,12 +18,23 @@ class BaseTest(unittest.TestCase):
             create_admin()
         
         self.login_data = {
-            "email": "greisunah@admin.com",
-            "password": "Unah1234"
+            "email": "unahgrace@gmail.com",
+            "password": "Unah1234",
+            "admin":True
         }
         self.login_admin_data = {
             "email":"admin@gmail.com",
 	        "password":"sifuma123"
+        }
+        self.signup_data = {
+            "email": "userme@gmail.com",
+            "password": "Unah1234",
+            "admin": "False"
+        }
+        self.email_exists_data = {
+            "email": "sifuma@gmail.com",
+            "password": "Sify1235",
+            "admin": 1
         }
         
         self.invalid_product_name = {
@@ -51,6 +62,15 @@ class BaseTest(unittest.TestCase):
             "email": "user20",
             "password": "Ramo123"
         }
+    def signup(self):
+        """ signup method"""
+       
+        response = self.client.post(
+            "api/v2/signup",
+            data=json.dumps(self.signup_data),
+            headers={'content-type': 'application/json'}
+        )
+        return response
 
     def login_admin(self):
         """ method to login admin """

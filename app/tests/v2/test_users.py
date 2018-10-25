@@ -4,7 +4,7 @@ from flask import jsonify
 from unittest import TestCase
 from app import create_app
 
-from app.tests.v1.base_test import BaseTest
+from app.tests.v2.base_test import BaseTest
 class TestUser(BaseTest):
     def test_email_exists(self):
         """ Test signup with an existing email """
