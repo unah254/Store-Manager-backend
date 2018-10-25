@@ -134,7 +134,7 @@ class ProductItem(StoreDatabase):
 
     def add(self):
         """ add productitem to table"""
-        SQL = "INSERT INTO fooditems(name, category, price, date) VALUES (%s, %s, %s,%s )"
+        SQL = "INSERT INTO productitems(name, category, price, date) VALUES (%s, %s, %s,%s )"
         data = (self.name, self.category, self.price, self.date)
         self.cur.execute(SQL, data)
         self.save()
@@ -199,9 +199,9 @@ class ProductItem(StoreDatabase):
         self.save()
         self.close()
 
-    def fetch_all_fooditems(self):
-        """ fetch all food items """
-        self.cur.execute("SELECT * FROM fooditems")
+    def fetch_all_productitems(self):
+        """ fetch all product items """
+        self.cur.execute("SELECT * FROM productitems")
         productitems = self.cur.fetchall()
         self.save()
         self.close()
