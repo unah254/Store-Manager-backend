@@ -3,6 +3,8 @@ import json
 
 from app import create_app
 
+from database import migrate, drop, create_admin
+
 class BaseTest(unittest.TestCase):
     def setUp(self):
         """ setting up tests """
@@ -10,8 +12,10 @@ class BaseTest(unittest.TestCase):
         self.app = create_app("testing")
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
-        self.app_context.push()
-
+        with self.app.app_context():
+            drop()
+            migrate()
+            create_admin()
         
         self.login_data = {
             "email": "greisunah@admin.com",
