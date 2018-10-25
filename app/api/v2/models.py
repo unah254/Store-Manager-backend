@@ -81,9 +81,9 @@ class User(StoreDatabase):
         """ map user to an object"""
 
         self.id = data[0]
-        self.email = data[2]
-        self.password_hash = data[3]
-        self.admin = data[4]
+        self.email = data[1]
+        self.password_hash = data[2]
+        self.admin = data[3]
 
         return self
 
