@@ -6,9 +6,8 @@ from flask_jwt_extended import JWTManager
 from instance.config import app_config
 
 
-from .api.v1.views import Createproduct, Allproducts, Singleproduct
-from .api.v1.views import Createrecord, Allsales, Singlesale, Login, SignUp
-from .api.v1.views import User, Users
+from .api.v2.views import Login, SignUp
+from .api.v2.views import User, Users
 
 JWT = JWTManager()
 
@@ -22,22 +21,14 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-    app.config['PROPAGATE_EXCEPTIONS'] = True
+    app.config.from_pyfile('config.py')
 
     JWT.init_app(app)
 
-    user = User( "admin@gmail.com", "sifuma123",admin=True)
-    Users.append(user)
+    
 
     api = Api(app)
-    api.add_resource(Createproduct, '/api/v1/products')
-    api.add_resource(Allproducts, '/api/v1/products')
-    api.add_resource(Singleproduct, '/api/v1/products/<int:id>')
-    api.add_resource(Createrecord, '/api/v1/sales')
-    api.add_resource(Allsales, '/api/v1/sales')
-    api.add_resource(Singlesale, '/api/v1/sales/<int:id>')
-    api.add_resource(Login, '/api/v1/login')
-    api.add_resource(SignUp, '/api/v1/signup')
+    api.add_resource(Login, '/api/v2/login')
+    api.add_resource(SignUp, '/api/v2/signup')
 
     return app
