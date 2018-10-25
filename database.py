@@ -2,7 +2,7 @@
 import os
 
 # local imports
-from app.api.v2.models import User
+from app.api.v2.models import User, ProductItem
 
 from app import create_app
 
@@ -13,7 +13,7 @@ def migrate():
     """ create test tables """
 
     User().create()
-    
+    ProductItem().create()
 
 
 def drop():

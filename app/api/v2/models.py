@@ -43,7 +43,7 @@ class StoreDatabase:
     def close(self):
         self.cur.close()
 
-Users=[]       # update table products set category = 'food' where product_id = 10;
+Users=[]       
 class User(StoreDatabase):
 
     def __init__(self, email=None, password=None, admin=False):
@@ -72,7 +72,7 @@ class User(StoreDatabase):
 
     def add(self):
         """ add users to table"""
-        SQL = "INSERT INTO users(email, password, admin) VALUES( %s, %s, %s, %s)"
+        SQL = "INSERT INTO users(email, password, admin) VALUES( %s, %s, %s)"
         data = (self.email, self.password_hash, self.admin)
         self.cur.execute(SQL, data)
         self.save()
@@ -104,3 +104,108 @@ class User(StoreDatabase):
             password_hash=self.password_hash,
             admin=self.admin
         )
+Products=[]
+class ProductItem(StoreDatabase):
+
+    def __init__(self, name=None, category=None, price=None):
+        super().__init__()
+        self.name = name
+        self.category = category
+        self.price = price
+        self.date = datetime.now().replace(second=0, microsecond=0)
+
+    def create(self):
+        """ create table productitems """
+        self.create_table(
+            """
+            CREATE TABLE productitems (
+                id serial PRIMARY KEY,
+                name VARCHAR NOT NULL,
+                description TEXT,
+                price INTEGER,
+                date  TIMESTAMP
+            );
+            """
+        )
+
+    def drop(self):
+        """ drop if table exists """
+        self.drop_table('productitems')
+
+    def add(self):
+        """ add productitem to table"""
+        SQL = "INSERT INTO fooditems(name, category, price, date) VALUES (%s, %s, %s,%s )"
+        data = (self.name, self.category, self.price, self.date)
+        self.cur.execute(SQL, data)
+        self.save()
+
+    def map_productitems(self, data):
+        """ map productitem to an object"""
+        productitem = ProductItem(
+            name=data[1], category=data[2], price=data[3])
+        productitem.id = data[0]
+        productitem.date = data[4]
+        self = productitem
+
+        return self
+
+    def serialize(self):
+        """ serialize a ProductItem object to a dictionary"""
+        return dict(
+            id=self.id,
+            name=self.name,
+            description=self.category,
+            date=str(self.date),
+            price=self.price,
+        )
+
+    def fetch_by_id(self, _id):
+        """ fetch product by id """
+        self.cur.execute(
+            "SELECT * FROM productitems where id = %s", (_id, ))
+        product_item = self.cur.fetchone()
+        self.save()
+        self.close()
+
+        if product_item:
+            return self.map_productitems(product_item)
+        return None
+
+    def fetch_by_name(self, name):
+        """ fetch product by name """
+        self.cur.execute("SELECT * FROM productitems where name = %s", (name,))
+        product_item = self.cur.fetchone()
+
+        if product_item:
+            return self.map_productitems(product_item)
+        return None
+
+    def delete(self, product_id):
+        """ delete product item """
+
+        self.cur.execute(
+            "DELETE FROM productitems WHERE id = %s", (product_id, )
+        )
+        self.save()
+        self.close()
+
+    def update(self, product_id):
+        """ update an existing product item """
+
+        self.cur.execute(
+            """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
+                self.name, self.category, self.price, product_id)
+        )
+        self.save()
+        self.close()
+
+    def fetch_all_fooditems(self):
+        """ fetch all food items """
+        self.cur.execute("SELECT * FROM fooditems")
+        productitems = self.cur.fetchall()
+        self.save()
+        self.close()
+
+        if productitems:
+            return [self.map_productitems(productitem) for productitem in productitems]
+        return None
