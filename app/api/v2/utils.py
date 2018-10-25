@@ -11,7 +11,7 @@ class Validators:
 
     def valid_password(self, password):
         """validate for password """
-        # positive look ahead
+        
         return re.match("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$",
                         password)
 

@@ -64,8 +64,8 @@ class SignUp(Resource):
         if not validate.valid_email(email):
             return {"message": "enter valid email"}, 400
 
-        if not validate.valid_password(password):
-            return {"message": "password should start with a capital letter and include a number"}, 400
+        # if not validate.valid_password(password):
+        #     return {"message": "password should start with a capital letter and include a number"}, 400
 
 
         if User().fetch_by_email(email):
@@ -99,7 +99,7 @@ class Login(Resource):
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404
     
-class Createproduct(Resource):
+class CreateProduct(Resource):
     '''to get input from user and create a new product'''
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True,
@@ -133,10 +133,32 @@ class Createproduct(Resource):
         return {"message": "product added"}, 201
 
 
-class Allproducts(Resource):
+class AllProducts(Resource):
 
     def get(self):
         ''' get all products '''
 
         return {'Allproducts': [product.serialize() for product in Products]}, 200
 
+class SingleProduct(Resource):
+    '''class to get a specific product'''
+
+    def get(self, id):
+        ''' get a specific order '''
+
+        product = ProductItem().fetch_by_id(id)
+
+        if product:
+            return {"Products": product.serialize()}
+
+        return {'message': "Not found"}, 404
+    @jwt_required
+    @admin_only
+    def delete(self, id):
+        ''' Delete a single product '''
+
+        product = ProductItem().fetch_by_id(id)
+        if product:
+            Products.remove(product)
+            return {'message': "Deleted"}, 200
+        return {'message': "Not found"}, 404

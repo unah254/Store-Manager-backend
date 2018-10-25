@@ -121,7 +121,7 @@ class ProductItem(StoreDatabase):
             CREATE TABLE productitems (
                 id serial PRIMARY KEY,
                 name VARCHAR NOT NULL,
-                description TEXT,
+                category TEXT,
                 price INTEGER,
                 date  TIMESTAMP
             );
