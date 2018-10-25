@@ -107,8 +107,9 @@ class User(StoreDatabase):
 Products=[]
 class ProductItem(StoreDatabase):
 
-    def __init__(self, name=None, category=None, price=None):
+    def __init__(self, id=id, name=None, category=None, price=None):
         super().__init__()
+        self.id = id
         self.name = name
         self.category = category
         self.price = price
@@ -134,8 +135,8 @@ class ProductItem(StoreDatabase):
 
     def add(self):
         """ add productitem to table"""
-        SQL = "INSERT INTO productitems(name, category, price, date) VALUES (%s, %s, %s,%s )"
-        data = (self.name, self.category, self.price, self.date)
+        SQL = "INSERT INTO productitems(id, name, category, price, date) VALUES (%s, %s, %s,%s )"
+        data = (self.id, self.name, self.category, self.price, self.date)
         self.cur.execute(SQL, data)
         self.save()
 
