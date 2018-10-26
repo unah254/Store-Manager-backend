@@ -54,7 +54,7 @@ class User(StoreDatabase):
                 self.admin = admin
 
     def create(self):
-        """ create table users """
+        """ create table users_table """
         self.create_table(
             """
             CREATE TABLE IF NOT EXISTS users(
@@ -68,7 +68,7 @@ class User(StoreDatabase):
 
     def drop(self):
         """ drop table if exists """
-        self.drop_table('users')
+        self.drop_table('users_table')
 
     def add(self):
         """ add users to table"""
@@ -104,12 +104,19 @@ class User(StoreDatabase):
             password_hash=self.password_hash,
             admin=self.admin
         )
+    def delete_user(self, user_id):
+        """  deleting a user"""
+        self.cur.execute(
+            "DELETE FROM users WHERE id = %s", (user_id, )
+        )
+        self.save()
+        self.close()
+
 Products=[]
 class ProductItem(StoreDatabase):
     
     def __init__(self, name=None, category=None, price=None):
         super().__init__()
-        self.id=None
         self.name = name
         self.category = category
         self.price = price
@@ -145,7 +152,7 @@ class ProductItem(StoreDatabase):
         productitem = ProductItem(
             name=data[1], category=data[2], price=data[3])
         productitem.id = data[0]
-        # productitem.date = data[4]
+        productitem.date = data[4]
         self = productitem
 
         return self

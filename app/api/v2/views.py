@@ -72,7 +72,7 @@ class SignUp(Resource):
             return {"message": "user with {} already exists".format(email)}, 400
 
         user = User(email, password)
-        Users.append(user)
+        user.add()
 
         return {"message": "user {} created successfully".format(email)}, 201
 
@@ -128,7 +128,7 @@ class CreateProduct(Resource):
         
         product = ProductItem(name=name, category=category, price=price)
 
-        Products.append(product)
+        product.add()
 
         return {"message": "product added"}, 201
 
@@ -137,9 +137,14 @@ class AllProducts(Resource):
 
     def get(self):
         ''' get all products '''
+        productitems = ProductItem().fetch_all_productitems()
 
-        return {'Allproducts': [product.serialize() for product in Products]}, 200
+        if not productitems:
+            return {"message": "There are no fooditems for now "}, 404
 
+        return {"Product items": [productitems.serialize() for fooditem in productitems]}, 200
+
+        
 class SingleProduct(Resource):
     '''class to get a specific product'''
 
@@ -159,9 +164,9 @@ class SingleProduct(Resource):
 
         product = ProductItem().fetch_by_id(id)
         if product:
-            Products.remove(product)
-            return {'message': "Deleted"}, 200
-        return {'message': "Not found"}, 404
+           ProductItem().delete(id)
+        return {'message': "Deleted"}, 200
+        
 
     def put(self, product_id):
         """ Modify a product """
