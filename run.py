@@ -21,7 +21,7 @@ def drop():
     """ drop test tables if they exist """
 
     User().drop()
-    
+    ProductItem().drop()
 
 # add admin to db
 @app.cli.command()
