@@ -3,7 +3,7 @@ from flask_script import Manager
 
 from app import create_app
 # import user model
-from app.api.v2.models import User
+from app.api.v2.models import User, ProductItem
 
 app = create_app('testing')
 
@@ -16,8 +16,13 @@ manager = Manager(app)
 @manager.command
 def migrate():
     User().create()
-    
+    ProductItem().create()
+@manager.command
+def drop():
+    """ drop test tables if they exist """
 
+    User().drop()
+    ProductItem().drop()
 
 # usage python manage.py create_admin
 @manager.command
