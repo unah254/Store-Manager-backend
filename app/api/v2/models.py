@@ -16,7 +16,7 @@ class StoreDatabase:
         self.db_password = current_app.config['DB_PASSWORD']
         self.db_name = current_app.config['DB_NAME']
 
-        # connect to storemanagertest database
+        # connect to storemanagerapp database
         self.conn = psycopg2.connect(
             host=self.db_host,
             user=self.db_username,
@@ -59,7 +59,7 @@ class User(StoreDatabase):
             """
             CREATE TABLE IF NOT EXISTS users(
                 id serial PRIMARY KEY,
-                email  VARCHAR NOT NULL,
+                email  VARCHAR NOT NULL UNIQUE, 
                 password VARCHAR NOT NULL,
                 admin BOOLEAN NOT NULL
             );
@@ -68,7 +68,7 @@ class User(StoreDatabase):
 
     def drop(self):
         """ drop table if exists """
-        self.drop_table('users_table')
+        self.drop_table('users')
 
     def add(self):
         """ add users to table"""
@@ -117,6 +117,7 @@ class ProductItem(StoreDatabase):
     
     def __init__(self, name=None, category=None, price=None):
         super().__init__()
+        self.id=0
         self.name = name
         self.category = category
         self.price = price
@@ -128,7 +129,7 @@ class ProductItem(StoreDatabase):
             """
             CREATE TABLE productitems (
                 id serial PRIMARY KEY,
-                name VARCHAR NOT NULL,
+                name VARCHAR NOT NULL UNIQUE,
                 category TEXT,
                 price INTEGER,
                 date  TIMESTAMP
@@ -142,6 +143,7 @@ class ProductItem(StoreDatabase):
 
     def add(self):
         """ add productitem to table"""
+        
         SQL = "INSERT INTO productitems(name, category, price, date) VALUES (%s, %s, %s,%s )"
         data = (self.name, self.category, self.price, self.date)
         self.cur.execute(SQL, data)
@@ -163,7 +165,7 @@ class ProductItem(StoreDatabase):
             id=self.id,
             name=self.name,
             category=self.category,
-            # date=str(self.date),
+            date=str(self.date),
             price=self.price,
         )
 

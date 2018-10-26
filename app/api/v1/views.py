@@ -1,6 +1,6 @@
 import datetime
 from functools import wraps
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_restful import Resource, reqparse
 from werkzeug.security import check_password_hash
 
@@ -72,19 +72,27 @@ class Createproduct(Resource):
         # if not Validators().valid_product_description(description):
         #     return {'message': 'Enter valid product description'}, 400
         
-        product = Product(name, price, category)
+        new_product = Product(
+            
+            name=name,
+            price=price,
+            category=category
+        )
+        product = new_product.create_product()
 
-        products.append(product)
+        # products.append(product)
 
-        return {"message": "product added"}, 201
+        return make_response(jsonify({"product":product,"message": "product added"}), 201)
+  
+        
 
 
 class Allproducts(Resource):
 
     def get(self):
         ''' get all products '''
-
-        return {'Allproducts': [product.serialize() for product in products]}, 200
+        product = Product.get_all_product()
+        return {'Allproducts': product}, 200
 
 
 class Singleproduct(Resource):
@@ -94,11 +102,12 @@ class Singleproduct(Resource):
         ''' get a specific order '''
 
         product = Product().get_id(id)
+        return product
 
-        if product:
-            return {"Products": product.serialize()}
+        # if product:
+        #     return {"Products": product.serialize()}
 
-        return {'message': "Not found"}, 404
+        # return {'message': "Not found"}, 404
     @jwt_required
     @admin_only
     def delete(self, id):
@@ -145,17 +154,31 @@ class Createrecord(Resource):
 
         sale = Salesrecord(name, price, quantitysold, amountbrought)
 
-        sales.append(sale)
+        new_record = Salesrecord(
+            
+            name=name,
+            price=price,
+            quantitysold=quantitysold,
+            amountbrought=amountbrought
+        )
+        sale = new_record.create_record()
 
-        return {"message": "record created"}, 201
+        # products.append(product)
+
+        return make_response(jsonify({"record":sale,"message": "record created"}), 201)
+
+        # sales.append(sale)
+
+        # return {"message": "record created"}, 201
 
 
 class Allsales(Resource):
 
     def get(self):
         ''' get all salerecords '''
-
-        return {'Allsales': [sale.serialize() for sale in sales]}, 200
+        sale = Salesrecord.get_all_record()
+        return {'Allproducts': sale}, 200
+        
 
 
 class Singlesale(Resource):

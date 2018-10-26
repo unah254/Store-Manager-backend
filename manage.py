@@ -5,7 +5,7 @@ from app import create_app
 # import user model
 from app.api.v2.models import User, ProductItem
 
-app = create_app('testing')
+app = create_app('development')
 
 # for  running commands on terminal
 manager = Manager(app)
@@ -17,6 +17,7 @@ manager = Manager(app)
 def migrate():
     User().create()
     ProductItem().create()
+    
 @manager.command
 def drop():
     """ drop test tables if they exist """

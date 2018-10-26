@@ -126,11 +126,17 @@ class CreateProduct(Resource):
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
         
+        
+        # product = ProductItem(name=name, category=category, price=price)
+        product = ProductItem().fetch_by_name(name)
+        if product:
+            return {'message':'product already exists'}, 400
+        
         product = ProductItem(name=name, category=category, price=price)
 
         product.add()
 
-        return {"message": "product added"}, 201
+        return {"message": "product added", "product": product.serialize()}, 201
 
 
 class AllProducts(Resource):
@@ -140,9 +146,9 @@ class AllProducts(Resource):
         productitems = ProductItem().fetch_all_productitems()
 
         if not productitems:
-            return {"message": "There are no fooditems for now "}, 404
+            return {"message": "There are no productitems for now "}, 404
 
-        return {"Product items": [productitems.serialize() for fooditem in productitems]}, 200
+        return {"Product items": [productitems.serialize() for productitem in productitems]}, 200
 
         
 class SingleProduct(Resource):
