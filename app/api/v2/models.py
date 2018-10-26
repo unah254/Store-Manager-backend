@@ -199,12 +199,12 @@ class ProductItem(StoreDatabase):
         self.save()
         self.close()
 
-    def update(self, product_id):
+    def update(self, product_id,name, price, category):
         """ update an existing product item """
 
         self.cur.execute(
             """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
-                self.name, self.category, self.price, product_id)
+                name, category, price, product_id,)
         )
         self.save()
         self.close()

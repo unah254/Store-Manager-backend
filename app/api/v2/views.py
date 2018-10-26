@@ -136,7 +136,7 @@ class CreateProduct(Resource):
 
         product.add()
 
-        return {"message": "product added", "product": product.serialize()}, 201
+        return {"message": "product successfuly created", "product": product.serialize()}, 201
 
 
 class AllProducts(Resource):
@@ -148,7 +148,7 @@ class AllProducts(Resource):
         if not productitems:
             return {"message": "There are no productitems for now "}, 404
 
-        return {"Product items": [productitems.serialize() for productitem in productitems]}, 200
+        return {"Product items": [productitem.serialize() for productitem in productitems]}, 200
 
         
 class SingleProduct(Resource):
@@ -171,10 +171,24 @@ class SingleProduct(Resource):
         product = ProductItem().fetch_by_id(id)
         if product:
            ProductItem().delete(id)
-        return {'message': "Deleted"}, 200
+        return {'message': "Succesfully Deleted"}, 200
         
-
+    @jwt_required
+    @admin_only
     def put(self, product_id):
         """ Modify a product """
-        product = ProductItem().fetch_by_id(id)
-        return product
+        data = request.get_json()
+
+        name = data['name']
+        price = data['price']
+        category = data['category']
+        product = ProductItem().fetch_by_id(product_id)
+
+        if product:
+            ProductItem().update(product_id, name, price, category)
+
+        return {'message':'Succesfully modified'}, 200
+        # if not product:
+        #     return {'message':'no product to be modified'}, 
+        # ProductItem().update(product_id)
+        # return {'message':'product modified succesfully'}, 200
