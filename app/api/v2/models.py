@@ -117,7 +117,7 @@ class ProductItem(StoreDatabase):
     
     def __init__(self, name=None, category=None, price=None):
         super().__init__()
-        self.id=0
+        self.id=id
         self.name = name
         self.category = category
         self.price = price
@@ -223,8 +223,9 @@ class ProductItem(StoreDatabase):
 sales=[]
 class SalesRecord(StoreDatabase):
     
-    def __init__(self, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
+    def __init__(self, id=None, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
         super().__init__()
+        self.id=id
         self.name = name
         self.category = category
         self.price = price

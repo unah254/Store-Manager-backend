@@ -4,11 +4,11 @@ from flask_restful import Resource, reqparse
 
 from functools import wraps
 from werkzeug.security import check_password_hash
-from flask import Flask, request, jsonify
+from flask import request
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # local imports
-from .models import User, Users, ProductItem, Products, SalesRecord, sales
+from .models import User, ProductItem, SalesRecord, Users, Products
 from .utils import Validators
 
 
@@ -92,7 +92,7 @@ class Login(Resource):
 
         user = User().fetch_by_email(email)
         
-        print(user.email)
+        
 
         if user and check_password_hash(user.password_hash, password):
             expires = datetime.timedelta(days=2)
@@ -138,6 +138,7 @@ class CreateProduct(Resource):
         product.add()
 
         return {"message": "product successfuly created", "product": product.serialize()}, 201
+        
 
 
 class AllProducts(Resource):
@@ -214,7 +215,7 @@ class AddSaleRecord(Resource):
 
     parser.add_argument('amountbrought', type=int, required=True,
                         help="This field cannot be left blank!")
-    
+
     @jwt_required
     @user_only
     def post(self):
@@ -230,8 +231,6 @@ class AddSaleRecord(Resource):
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
         
-        
-        
         record = SalesRecord().fetch_by_name(name)
         if record:
             return {'message':'record already exists'}, 400
@@ -241,3 +240,15 @@ class AddSaleRecord(Resource):
         sales.add()
 
         return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
+
+class RecordsCreated(Resource):
+    @jwt_required
+    @user_only
+    def get(self):
+        ''' get all sale records '''
+        records = SalesRecord().fetch_all_salesrecords()
+
+        if not records:
+            return {"message": "No records available "}, 404
+
+        return {"records": [records.serialize() for records in records]}, 200
