@@ -4,32 +4,32 @@ import click
 
 from app import create_app
 
-from app.api.v2.models import User, ProductItem
+# from app.api.v2.models import User, ProductItem
 
 #config_name = os.getenv('APP_SETTINGS')
 app = create_app(os.getenv('APP_SETTINGS') or 'development')
-@app.cli.command()
-def migrate():
-    """ create test tables """
+# @app.cli.command()
+# def migrate():
+#     """ create test tables """
 
-    User().create()
-    ProductItem().create()
+#     User().create()
+#     ProductItem().create()
     
 
-@app.cli.command()
-def drop():
-    """ drop test tables if they exist """
+# @app.cli.command()
+# def drop():
+#     """ drop test tables if they exist """
 
-    User().drop()
-    ProductItem().drop()
+#     User().drop()
+#     ProductItem().drop()
 
-# add admin to db
-@app.cli.command()
-def create_admin():
-    """ add default admin """
-    user = User(email='unahgrace@gmail.com',
-                password='Unah123', admin=True)
-    user.add()
+# # add admin to db
+# @app.cli.command()
+# def create_admin():
+#     """ add default admin """
+#     user = User(email='unahgrace@gmail.com',
+#                 password='Unah123', admin=True)
+#     user.add()
 
 
 
