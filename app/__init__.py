@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager
 from instance.config import app_config
 
 
-from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord
+from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord, RecordsCreated
 from .api.v2.views import User, Users, ProductItem, Products, SalesRecord
 
 JWT = JWTManager()
@@ -37,5 +37,6 @@ def create_app(config_name):
     api.add_resource(AllProducts, '/api/v2/products')
     api.add_resource(SingleProduct, '/api/v2/products/<int:id>')
     api.add_resource(AddSaleRecord, '/api/v2/sales')
+    api.add_resource(RecordsCreated, '/api/v2/sales')
 
     return app
