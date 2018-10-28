@@ -3,7 +3,7 @@ from flask_script import Manager
 
 from app import create_app
 # import user model
-from app.api.v2.models import User, ProductItem
+from app.api.v2.models import User, ProductItem, SalesRecord
 
 app = create_app('development')
 
@@ -17,6 +17,7 @@ manager = Manager(app)
 def migrate():
     User().create()
     ProductItem().create()
+    SalesRecord().create()
     
 @manager.command
 def drop():
@@ -24,6 +25,7 @@ def drop():
 
     User().drop()
     ProductItem().drop()
+    SalesRecord().drop()
 
 # usage python manage.py create_admin
 @manager.command
