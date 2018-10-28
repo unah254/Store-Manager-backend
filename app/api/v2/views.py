@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # local imports
-from .models import User, Users, ProductItem, Products
+from .models import User, Users, ProductItem, Products, SalesRecord, sales
 from .utils import Validators
 
 
@@ -19,8 +19,7 @@ def admin_only(_f):
     @wraps(_f)
     def wrapper_function(*args, **kwargs):
         user = User().fetch_by_email(get_jwt_identity())
-
-        print(user)
+        
 
         if not user.admin:
             return {'message': 'Anauthorized access, you must be an admin to access this level'}, 401
@@ -92,6 +91,8 @@ class Login(Resource):
         password = data["password"]
 
         user = User().fetch_by_email(email)
+        
+        print(user.email)
 
         if user and check_password_hash(user.password_hash, password):
             expires = datetime.timedelta(days=2)
@@ -140,7 +141,8 @@ class CreateProduct(Resource):
 
 
 class AllProducts(Resource):
-
+    @jwt_required
+    @admin_only
     def get(self):
         ''' get all products '''
         productitems = ProductItem().fetch_all_productitems()
@@ -175,20 +177,67 @@ class SingleProduct(Resource):
         
     @jwt_required
     @admin_only
-    def put(self, product_id):
+    def put(self, id):
         """ Modify a product """
         data = request.get_json()
 
         name = data['name']
         price = data['price']
         category = data['category']
-        product = ProductItem().fetch_by_id(product_id)
+        product = ProductItem().fetch_by_id(id)
 
         if product:
-            ProductItem().update(product_id, name, price, category)
+            ProductItem().update(id, name, price, category)
 
-        return {'message':'Succesfully modified'}, 200
+        return {'message':'product succesfully modified'}, 200
         # if not product:
         #     return {'message':'no product to be modified'}, 
         # ProductItem().update(product_id)
         # return {'message':'product modified succesfully'}, 200
+
+class AddSaleRecord(Resource):
+    '''to get input from user and create a new record'''
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True,
+                         help="This field cannot be left blank")
+   
+
+    parser.add_argument('price', type=int, required=True,
+                        help="This field cannot be left blank")
+    
+
+    parser.add_argument('category', type=str, required=True,
+                        help="This field cannot be left blank!")
+
+    parser.add_argument('quantitysold', type=int, required=True,
+                        help="This field cannot be left blank!")
+
+    parser.add_argument('amountbrought', type=int, required=True,
+                        help="This field cannot be left blank!")
+    
+    @jwt_required
+    @user_only
+    def post(self):
+        ''' add new sale record'''
+        data = request.get_json()
+
+        name = data['name']
+        price = data['price']
+        category = data['category']
+        quantitysold = data['quantitysold']
+        amountbrought = data['amountbrought']
+
+        if not Validators().valid_product_name(name):
+            return {'message': 'Enter valid product name'}, 400
+        
+        
+        
+        record = SalesRecord().fetch_by_name(name)
+        if record:
+            return {'message':'record already exists'}, 400
+        
+        sales = SalesRecord(name=name, category=category, price=price, quantitysold=quantitysold, amountbrought=amountbrought)
+
+        sales.add()
+
+        return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
