@@ -1,11 +1,12 @@
 import unittest
 import json
-
+import psycopg2
 from app import create_app
 
 from database import migrate, drop, create_admin
 
 class BaseTest(unittest.TestCase):
+   
     def setUp(self):
         """ setting up tests """
 
@@ -19,12 +20,12 @@ class BaseTest(unittest.TestCase):
         
         self.login_data = {
             "email": "unahgrace@gmail.com",
-            "password": "Unah1234",
+            "password": "Unah123",
             "admin":True
         }
         self.login_admin_data = {
-            "email":"admin@gmail.com",
-	        "password":"sifuma123"
+            "email":"unahgrace@gmail.com",
+	        "password":"Unah123"
         }
         self.signup_data = {
             "email": "userme@gmail.com",
@@ -62,6 +63,17 @@ class BaseTest(unittest.TestCase):
             "email": "user20",
             "password": "Ramo123"
         }
+        self.product_data = {
+            "name":"hjjkjrrhjjkkjky",
+            "category":"electronicsgfdf",
+            "price":2500
+        }
+        self.product_test_data = {
+            "name":"mememe",
+            "category":"electronicsgfdf",
+            "price":2500
+        }
+
     def signup(self):
         """ signup method"""
        
@@ -80,8 +92,8 @@ class BaseTest(unittest.TestCase):
             data=json.dumps(self.login_admin_data),
             headers={'content-type': 'application/json'}
         )
-        data = json.loads(res.data.decode())
-        return data
+        # data = json.loads(res.data)
+        return res
     def login_user(self):
         """ login method """
         
@@ -101,3 +113,9 @@ class BaseTest(unittest.TestCase):
         """get token """
         token = self.login_admin()
         return token
+
+    # def tearDown(self):
+    #     drop()
+
+    # # #     self.app_context.pop()
+    # #     # with self.app.app_context()drop()
