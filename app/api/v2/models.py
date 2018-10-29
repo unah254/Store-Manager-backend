@@ -4,7 +4,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 import psycopg2
 
+import os
+
 from flask import current_app
+
+config_name=os.getenv("APP_SETTINGS")
+
+test_db=os.getenv("DB_NAMET")
+
 
 
 class StoreDatabase:
@@ -15,14 +22,26 @@ class StoreDatabase:
         self.db_username = current_app.config['DB_USERNAME']
         self.db_password = current_app.config['DB_PASSWORD']
         self.db_name = current_app.config['DB_NAME']
+        self.test_db = test_db
 
         # connect to storemanagerapp database
-        self.conn = psycopg2.connect(
-            host=self.db_host,
-            user=self.db_username,
-            password=self.db_password,
-            database=self.db_name,
-        )
+        try:
+            if config_name=="development":
+                self.conn = psycopg2.connect( 
+                host=self.db_host,
+                user=self.db_username,
+                password=self.db_password,
+                database=self.db_name
+                )
+            if config_name=="testing":
+                self.conn = psycopg2.connect(
+                host=self.db_host,
+                user=self.db_username,
+                password=self.db_password,
+                database=self.test_db
+                )
+        except:
+            print("database not connected")
         # open cursor to enable operation of database
         self.cur = self.conn.cursor()
 
@@ -117,7 +136,6 @@ class ProductItem(StoreDatabase):
     
     def __init__(self, name=None, category=None, price=None):
         super().__init__()
-        self.id=id
         self.name = name
         self.category = category
         self.price = price
@@ -127,7 +145,7 @@ class ProductItem(StoreDatabase):
         """ create table productitems """
         self.create_table(
             """
-            CREATE TABLE productitems (
+            CREATE TABLE IF NOT EXISTS productitems (
                 id serial PRIMARY KEY,
                 name VARCHAR NOT NULL UNIQUE,
                 category TEXT,
@@ -162,7 +180,7 @@ class ProductItem(StoreDatabase):
     def serialize(self):
         """ serialize a ProductItem object to a dictionary"""
         return dict(
-            id=self.id,
+            # id=self.id,
             name=self.name,
             category=self.category,
             date=str(self.date),
@@ -183,7 +201,7 @@ class ProductItem(StoreDatabase):
 
     def fetch_by_name(self, name):
         """ fetch product by name """
-        self.cur.execute("SELECT * FROM productitems where name = %s", (name,))
+        self.cur.execute("SELECT * FROM productitems where name = %s", (name, ))
         product_item = self.cur.fetchone()
 
         if product_item:
@@ -223,9 +241,9 @@ class ProductItem(StoreDatabase):
 sales=[]
 class SalesRecord(StoreDatabase):
     
-    def __init__(self, id=None, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
+    def __init__(self, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
         super().__init__()
-        self.id=id
+        # self.id=id
         self.name = name
         self.category = category
         self.price = price
@@ -274,7 +292,7 @@ class SalesRecord(StoreDatabase):
     def serialize(self):
         """ serialize a SalesRecord object to a dictionary"""
         return dict(
-            id=self.id,
+            # id=self.id,
             name=self.name,
             category=self.category,
             price=self.price,

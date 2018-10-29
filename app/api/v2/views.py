@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse
 
 from functools import wraps
 from werkzeug.security import check_password_hash
-from flask import request
+from flask import request, jsonify, make_response
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # local imports
@@ -118,7 +118,7 @@ class CreateProduct(Resource):
     @admin_only
     def post(self):
         ''' add new product'''
-        data = request.get_json()
+        data = request.get_json(force=True)
 
         name = data['name']
         price = data['price']
@@ -136,8 +136,9 @@ class CreateProduct(Resource):
         product = ProductItem(name=name, category=category, price=price)
 
         product.add()
+        
 
-        return {"message": "product successfuly created", "product": product.serialize()}, 201
+        return {"message": "product successfuly created", "product":product.serialize()}, 201
         
 
 
@@ -150,8 +151,17 @@ class AllProducts(Resource):
 
         if not productitems:
             return {"message": "There are no productitems for now "}, 404
+        all_pros = []
+        for p in productitems:
+            format_p = {
+                "id":p.id,
+                "name":p.name,
+                "category":p.category,
+                "price":p.price
+            }
+            all_pros.append(format_p)
 
-        return {"Product items": [productitem.serialize() for productitem in productitems]}, 200
+        return {"message":"success", "Product items":all_pros}, 200
 
         
 class SingleProduct(Resource):
@@ -236,7 +246,7 @@ class AddSaleRecord(Resource):
             return {'message':'record already exists'}, 400
         
         sales = SalesRecord(name=name, category=category, price=price, quantitysold=quantitysold, amountbrought=amountbrought)
-
+        print(sales)
         sales.add()
 
         return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
