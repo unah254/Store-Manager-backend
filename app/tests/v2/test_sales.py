@@ -11,17 +11,24 @@ from database import migrate, drop, create_admin
 class Testsales(BaseTest):
     '''Test the sales'''
 
-    def test_get_all_records(self):
-        ''' Test to get all records '''
+    # def test_get_all_records(self):
+    #     ''' Test to get all records '''
+    #     login = self.login_admin()
+    #     token = json.loads(login.data.decode()).get('token')
 
-        response = self.client.get(
-            "/api/v2/sales", content_type='application/json')
+    #     response = self.client.get(
+    #         "/api/v2/sales", 
+    #         content_type='application/json',
+    #         headers={
+    #                  "Authorization": 'Bearer '+token
+    #                  }
+    #         )
 
-        data = json.loads(response.data.decode('utf-8'))
-        print(data)
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status_code, 200)
-        self.assertNotEqual(response.status_code, 404)
+    #     data = json.loads(response.data.decode('utf-8'))
+    #     print(data)
+    #     self.assertEqual(response.content_type, 'application/json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertNotEqual(response.status_code, 404)
 
     # def test_get_specific_record(self):
     #     ''' Test to get single product '''

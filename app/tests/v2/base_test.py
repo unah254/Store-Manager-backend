@@ -13,10 +13,17 @@ class BaseTest(unittest.TestCase):
         self.app = create_app("testing")
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
-        with self.app.app_context():
-            drop()
-            migrate()
-            create_admin()
+        self.app_context.push()
+        with self.app_context:
+           drop()
+           migrate()
+           create_admin()
+        # self.client = self.app.test_client()
+        # self.app_context = self.app.app_context()
+        # with self.app.app_context():
+        #     drop()
+        #     migrate()
+        #     create_admin()
         
         self.login_data = {
             "email": "unahgrace@gmail.com",

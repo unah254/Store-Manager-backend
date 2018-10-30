@@ -14,7 +14,7 @@ app = create_app(os.getenv('APP_SETTINGS') or 'development')
 
 #     User().create()
 #     ProductItem().create()
-    
+
 
 # @app.cli.command()
 # def drop():

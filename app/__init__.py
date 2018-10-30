@@ -14,7 +14,7 @@ JWT = JWTManager()
 
 def create_app(config_name):
     """
-    Given a configuration name, loads the correct 
+    Given a configuration name, loads the correct
     configuration from the config.py
     :param config_name: The configuration name to load the configuration
     :return: The app to be initialized
@@ -23,12 +23,12 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
     app.config["JWT_SECRET_KEY"]=os.getenv("JWT_SECRET_KEY")
-    
-    
+
+
 
     JWT.init_app(app)
 
-    
+
 
     api = Api(app)
     api.add_resource(Login, '/api/v2/login')

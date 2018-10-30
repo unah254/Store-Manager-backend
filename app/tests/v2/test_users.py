@@ -15,14 +15,14 @@ class TestUser(BaseTest):
             "api/v2/signup",
             data=json.dumps(self.email_exists_data),
             headers={'content-type': 'application/json',
-                    "Authorization": f'Bearer {token}'
+                    "Authorization": 'Bearer {}'.format(token)
                     }
         )
         self.assertEqual(response.status_code, 201)
 
     def test_non_existing_user_login(self):
         """ Test if user does not exist """
-        
+
         self.signup()
 
         response = self.client.post(
@@ -32,9 +32,9 @@ class TestUser(BaseTest):
         )
 
         self.assertEqual(response.status_code, 404)
+        print(json.loads(response.data.decode('utf-8'))['message'], ">>>>>>>>")
 
-        self.assertEqual(json.loads(response.data)[
-                         "message"], "user not found")
+        self.assertEqual(json.loads(response.data.decode('utf-8'))["message"], "user not found")
 
     def test_invalid_email(self):
         """ Test invalid email """
@@ -45,7 +45,7 @@ class TestUser(BaseTest):
             "api/v2/signup",
             data=json.dumps(self.invalid_email_data),
             headers={'content-type': 'application/json',
-            "Authorization": f'Bearer {token}'
+            "Authorization": 'Bearer {}'.format(token)
             }
         )
         res = json.loads(response.data.decode())
@@ -53,9 +53,9 @@ class TestUser(BaseTest):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(res['message'], "enter valid email")
         self.assertEqual(response.content_type, 'application/json')
-        
+
     def test_invalid_password(self):
-       
+
 
         response = self.client.post(
             "api/v2/signup",
@@ -66,7 +66,7 @@ class TestUser(BaseTest):
 
 
     def test_incorect_password(self):
-        
+
         self.signup()
         response = self.client.post(
             "api/v2/login",
@@ -92,3 +92,5 @@ class TestUser(BaseTest):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(res['message'], "user not found")
         self.assertEqual(response.content_type, 'application/json')
+
+

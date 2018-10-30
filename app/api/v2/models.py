@@ -8,11 +8,11 @@ import os
 
 from flask import current_app
 
-config_name=os.getenv("APP_SETTINGS")
+
 
 test_db=os.getenv("DB_NAMET")
 
-
+config_name = os.environ['APP_SETTINGS']
 
 class StoreDatabase:
     """ database connection model """
@@ -27,12 +27,13 @@ class StoreDatabase:
         # connect to storemanagerapp database
         try:
             if config_name=="development":
-                self.conn = psycopg2.connect( 
+                self.conn = psycopg2.connect(
                 host=self.db_host,
                 user=self.db_username,
                 password=self.db_password,
                 database=self.db_name
                 )
+                
             if config_name=="testing":
                 self.conn = psycopg2.connect(
                 host=self.db_host,
@@ -62,7 +63,7 @@ class StoreDatabase:
     def close(self):
         self.cur.close()
 
-Users=[]       
+Users=[]
 class User(StoreDatabase):
 
     def __init__(self, email=None, password=None, admin=False):
@@ -78,7 +79,7 @@ class User(StoreDatabase):
             """
             CREATE TABLE IF NOT EXISTS users(
                 id serial PRIMARY KEY,
-                email  VARCHAR NOT NULL UNIQUE, 
+                email  VARCHAR NOT NULL UNIQUE,
                 password VARCHAR NOT NULL,
                 admin BOOLEAN NOT NULL
             );
@@ -133,7 +134,7 @@ class User(StoreDatabase):
 
 Products=[]
 class ProductItem(StoreDatabase):
-    
+
     def __init__(self, name=None, category=None, price=None):
         super().__init__()
         self.name = name
@@ -161,7 +162,7 @@ class ProductItem(StoreDatabase):
 
     def add(self):
         """ add productitem to table"""
-        
+
         SQL = "INSERT INTO productitems(name, category, price, date) VALUES (%s, %s, %s,%s )"
         data = (self.name, self.category, self.price, self.date)
         self.cur.execute(SQL, data)
@@ -219,7 +220,7 @@ class ProductItem(StoreDatabase):
 
     def update(self, id, name, price, category):
         """ update an existing product item """
-        
+
         self.cur.execute(
             """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
                 name, category, price, id,)
@@ -240,7 +241,7 @@ class ProductItem(StoreDatabase):
 
 sales=[]
 class SalesRecord(StoreDatabase):
-    
+
     def __init__(self, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
         super().__init__()
         # self.id=id
@@ -273,7 +274,7 @@ class SalesRecord(StoreDatabase):
 
     def add(self):
         """ add salerecord to table"""
-        
+
         SQL = "INSERT INTO sales(name, category, price, quantitysold,amountbrought, date) VALUES (%s, %s, %s,%s, %s,%s)"
         data = (self.name, self.category, self.price, self.quantitysold, self.amountbrought, self.date)
         self.cur.execute(SQL, data)
@@ -299,7 +300,7 @@ class SalesRecord(StoreDatabase):
             quantitysold=self.quantitysold,
             amountbrought=self.amountbrought,
             date=str(self.date),
-           
+
         )
 
     def fetch_record_by_id(self, _id):
@@ -334,7 +335,7 @@ class SalesRecord(StoreDatabase):
 
     # def update(self, id, name, price, category):
     #     """ update an existing product item """
-        
+
     #     self.cur.execute(
     #         """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
     #             name, category, price, id,)
