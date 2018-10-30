@@ -1,14 +1,18 @@
 language: python
 
 python:	
- - "3.7-dev"	
-
-cache: pip	
+ - "3.7-dev"
+ 
+services:
+  - postgres
 
 install:	
  - pip install -r requirements.txt
  - pip install codeclimate-test-reporter
-
+ 
+before_script:
+  - psql -c "create database store_management_tests;" -U postgres
+  - psql -c "create user unah;" -U postgres
 script:	
  
  -  python -m pytest --cov=app/api/v2
@@ -17,3 +21,5 @@ script:
 after_success:
  - coveralls
  - codeclimate-test-reporter
+
+cache: pip	
