@@ -68,10 +68,19 @@ class BaseTest(unittest.TestCase):
             "category":"electronicsgfdf",
             "price":2500
         }
+        self.product_admin_data = {
+            "name":"towehlers3hjj3",
+            "category":"clothing",
+            "price":2500
+        }
         self.product_test_data = {
             "name":"mememe",
             "category":"electronicsgfdf",
             "price":2500
+        }
+        self.non_existing_user_data = {
+            "email":"hello@gmail.com",
+            "password":"Me1243"
         }
 
     def signup(self):
