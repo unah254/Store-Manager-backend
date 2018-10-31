@@ -18,10 +18,10 @@ class StoreDatabase:
     """ database connection model """
 
     def __init__(self):
-        self.db_host = current_app.config['DB_HOST']
-        self.db_username = current_app.config['DB_USERNAME']
-        self.db_password = current_app.config['DB_PASSWORD']
-        self.db_name = current_app.config['DB_NAME']
+        self.db_host = os.getenv('DB_HOST', 'localhost')
+        self.db_username = os.getenv('DB_USERNAME', 'unah')
+        self.db_password = os.getenv('DB_PASSWORD', '')
+        self.db_name = os.getenv('DB_NAME', 'store_management_tests')
         self.test_db = test_db
 
         # connect to storemanagerapp database
@@ -217,6 +217,7 @@ class ProductItem(StoreDatabase):
         self.cur.execute(
             "DELETE FROM productitems WHERE id = %s", (product_id, )
         )
+        
         self.save()
         self.close()
 
@@ -244,14 +245,12 @@ class ProductItem(StoreDatabase):
 
 class SalesRecord(StoreDatabase):
 
-    def __init__(self, name=None, category=None, price=None, quantitysold=None, amountbrought=None):
+    def __init__(self, creator_name=None, product_name=None, quantity_to_sell=None,):
         super().__init__()
         # self.id=id
-        self.name = name
-        self.category = category
-        self.price = price
-        self.quantitysold = quantitysold
-        self.amountbrought= amountbrought
+        self.quantity_to_sell = quantity_to_sell
+        self.creator_name = creator_name
+        self.product_name = product_name
         self.date = datetime.now().replace(second=0, microsecond=0)
 
     def create(self):
@@ -260,11 +259,9 @@ class SalesRecord(StoreDatabase):
             """
             CREATE TABLE sales (
                 id serial PRIMARY KEY,
-                name VARCHAR NOT NULL UNIQUE,
-                category TEXT,
-                price INTEGER,
-                quantitysold INTEGER,
-                amountbrought INTEGER,
+                creator_name VARCHAR NOT NULL UNIQUE,
+                product_name VARCHAR NOT NULL,
+                quantity_to_sell INTEGER,
                 date  TIMESTAMP
             );
             """
@@ -274,18 +271,33 @@ class SalesRecord(StoreDatabase):
         """ drop if table exists """
         self.drop_table('sales')
 
-    def add(self):
+    def add(self, product_name, quantity_to_sell, creator_name):
         """ add salerecord to table"""
+        self.cur.execute("SELECT quantity FROM Productitems WHERE product_name=%s", (product_name, ))
 
-        SQL = "INSERT INTO sales(name, category, price, quantitysold,amountbrought, date) VALUES (%s, %s, %s,%s, %s,%s)"
-        data = (self.name, self.category, self.price, self.quantitysold, self.amountbrought, self.date)
-        self.cur.execute(SQL, data)
-        self.save()
+        quantity_available = self.cur.fetchone()
+
+        if quantity_available:
+            self.cur.execute(
+                "INSERT INTO sales(creator_name, product_name, quantity_to_sell,date) VALUES (%s, %s, %s, %s)"
+            )
+            self.save()
+
+            remaining_quantity = quantity_available[0] - quantity_to_sell
+
+            self.cur.execute(
+                "UPDATE Productitems SET quantity=%s WHERE product_name=%s", (remaining_quantity, product_name)
+            )
+            self.save()
+        # SQL = "INSERT INTO sales(creator_name,quantity_to_sell,date) VALUES (%s, %s, %s)"
+        # data = (self.creator_name, self.product_name, self.quantity_to_sell)
+        # self.cur.execute(SQL, data)
+        # self.save()
 
     def map_salesrecord(self, data):
         """ map salerecord to an object"""
         salerecord = SalesRecord(
-            name=data[1], category=data[2], price=data[3], quantitysold=data[4], amountbrought=data[5])
+            creator_name=data[1], product_name=data[2], quantity_to_sell=data[3])
         SalesRecord.id = data[0]
         SalesRecord.date = data[4]
         self = salerecord
@@ -296,11 +308,9 @@ class SalesRecord(StoreDatabase):
         """ serialize a SalesRecord object to a dictionary"""
         return dict(
             # id=self.id,
-            name=self.name,
-            category=self.category,
-            price=self.price,
-            quantitysold=self.quantitysold,
-            amountbrought=self.amountbrought,
+            creator_name=self.creator_name,
+            product_name=self.product_name,
+            quantity_to_sell=self.quantity_to_sell,
             date=str(self.date),
 
         )

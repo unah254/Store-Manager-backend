@@ -4,10 +4,10 @@ import click
 
 from app import create_app
 
-from app.api.v2.models import User, ProductItem
+# from app.api.v2.models import User, ProductItem
 
 #config_name = os.getenv('APP_SETTINGS')
-app = create_app(os.getenv('APP_SETTINGS') or 'development')
+app = create_app(os.getenv('APP_SETTINGS', 'development') )
 # @app.cli.command()
 # def migrate():
 #     """ create test tables """

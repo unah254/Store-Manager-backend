@@ -99,6 +99,9 @@ class Login(Resource):
             token = create_access_token(user.email, expires_delta=expires)
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404
+
+# class Logout(Resource):
+
     
 class CreateProduct(Resource):
     '''to get input from user and create a new product'''
@@ -135,7 +138,7 @@ class CreateProduct(Resource):
         # product = ProductItem(name=name, category=category, price=price)
         product = ProductItem().fetch_by_name(name)
         if product:
-            return {'message':'product already exists'}, 400
+            return {'message':'product already exists, please update product'}, 400
         
         product = ProductItem(name=name, category=category, price=price, quantity=quantity)
 
@@ -173,7 +176,6 @@ class SingleProduct(Resource):
     '''class to get a specific product'''
     @jwt_required
     @admin_only
-    @user_only
     def get(self, id):
         ''' get a specific product '''
 
@@ -188,11 +190,17 @@ class SingleProduct(Resource):
     @admin_only
     def delete(self, id):
         ''' Delete a single product '''
-
+        
         product = ProductItem().fetch_by_id(id)
+
         if product:
            ProductItem().delete(id)
         return {'message': "Succesfully Deleted"}, 200
+
+        if not product:
+            return {"message": "There are no productitems for now "}, 404
+
+
         
     @jwt_required
     @admin_only
@@ -218,22 +226,18 @@ class SingleProduct(Resource):
 class AddSaleRecord(Resource):
     '''to get input from user and create a new record'''
     parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True,
+    parser.add_argument('creator_name', type=str, required=True,
                          help="This field cannot be left blank")
    
 
-    parser.add_argument('price', type=int, required=True,
+    parser.add_argument('product_name', type=str, required=True,
                         help="This field cannot be left blank")
     
 
-    parser.add_argument('category', type=str, required=True,
+    parser.add_argument('quantity_to_sell', type=int, required=True,
                         help="This field cannot be left blank!")
 
-    parser.add_argument('quantitysold', type=int, required=True,
-                        help="This field cannot be left blank!")
-
-    parser.add_argument('amountbrought', type=int, required=True,
-                        help="This field cannot be left blank!")
+    
 
     @jwt_required
     @user_only
@@ -241,22 +245,20 @@ class AddSaleRecord(Resource):
         ''' add new sale record'''
         data = request.get_json()
 
-        name = data['name']
-        price = data['price']
-        category = data['category']
-        quantitysold = data['quantitysold']
-        amountbrought = data['amountbrought']
-
-        if not Validators().valid_product_name(name):
+        creator_name = data['creator_name']
+        product_name = data['product_name']
+        quantity_to_sell = data['quantity_to_sell']
+        
+        if not Validators().valid_product_name(product_name):
             return {'message': 'Enter valid product name'}, 400
         
-        record = SalesRecord().fetch_by_name(name)
+        record = SalesRecord().fetch_by_name(product_name)
         if record:
-            return {'message':'record already exists'}, 400
+            return {'message':'product already exists'}, 400
         
-        sales = SalesRecord(name=name, category=category, price=price, quantitysold=quantitysold, amountbrought=amountbrought)
+        sales = SalesRecord(creator_name=creator_name, product_name=product_name, quantity_to_sell=quantity_to_sell)
         print(sales)
-        sales.add()
+        sales.add(creator_name, product_name, quantity_to_sell)
 
         return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
 
@@ -269,5 +271,3 @@ class RecordsCreated(Resource):
 
         if not records:
             return {"message": "No records available "}, 404
-
-        return {"records": [records.serialize() for records in records]}, 200

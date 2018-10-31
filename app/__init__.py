@@ -6,8 +6,9 @@ from flask_jwt_extended import JWTManager
 from instance.config import app_config
 
 
-from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord, RecordsCreated
-from .api.v2.views import User, ProductItem, SalesRecord
+
+# from .api.v2.views import User, ProductItem, SalesRecord
+# from app.api.v2.views import User, ProductItem,SalesRecord
 
 JWT = JWTManager()
 
@@ -20,11 +21,11 @@ def create_app(config_name):
     :return: The app to be initialized
     """
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(app_config[config_name])
+    # app.config.from_object(app_config[config_name])s
     app.config.from_pyfile('config.py')
     app.config["JWT_SECRET_KEY"]=os.getenv("JWT_SECRET_KEY")
-
-
+    with app.app_context():
+        from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord, RecordsCreated
 
     JWT.init_app(app)
 

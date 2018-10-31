@@ -25,10 +25,10 @@ class Testing(Config):
     TESTING = True
     DEBUG = True
 
-    DB_HOST = os.getenv('DB_HOST')
-    DB_USERNAME = os.getenv('DB_USERNAME')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_NAME = os.getenv('DB_NAME')
+    # DB_HOST = os.getenv('DB_HOST')
+    # DB_USERNAME = os.getenv('DB_USERNAME')
+    # DB_PASSWORD = os.getenv('DB_PASSWORD')
+    DB_NAME = os.getenv('DB_NAMET')
 
 
 class StagingConfig(Config):
