@@ -63,7 +63,7 @@ class StoreDatabase:
     def close(self):
         self.cur.close()
 
-Users=[]
+
 class User(StoreDatabase):
 
     def __init__(self, email=None, password=None, admin=False):
@@ -132,14 +132,14 @@ class User(StoreDatabase):
         self.save()
         self.close()
 
-Products=[]
 class ProductItem(StoreDatabase):
 
-    def __init__(self, name=None, category=None, price=None):
+    def __init__(self, name=None, category=None, price=None, quantity=None):
         super().__init__()
         self.name = name
         self.category = category
         self.price = price
+        self.quantity = quantity
         self.date = datetime.now().replace(second=0, microsecond=0)
 
     def create(self):
@@ -151,6 +151,7 @@ class ProductItem(StoreDatabase):
                 name VARCHAR NOT NULL UNIQUE,
                 category TEXT,
                 price INTEGER,
+                quantity INTEGER,
                 date  TIMESTAMP
             );
             """
@@ -163,15 +164,15 @@ class ProductItem(StoreDatabase):
     def add(self):
         """ add productitem to table"""
 
-        SQL = "INSERT INTO productitems(name, category, price, date) VALUES (%s, %s, %s,%s )"
-        data = (self.name, self.category, self.price, self.date)
+        SQL = "INSERT INTO productitems(name, category, price, quantity, date) VALUES (%s, %s, %s,%s, %s)"
+        data = (self.name, self.category, self.price, self.quantity, self.date)
         self.cur.execute(SQL, data)
         self.save()
 
     def map_productitems(self, data):
         """ map productitem to an object"""
         productitem = ProductItem(
-            name=data[1], category=data[2], price=data[3])
+            name=data[1], category=data[2], price=data[3], quantity=data[4])
         productitem.id = data[0]
         productitem.date = data[4]
         self = productitem
@@ -186,6 +187,7 @@ class ProductItem(StoreDatabase):
             category=self.category,
             date=str(self.date),
             price=self.price,
+            quantity=self.quantity
         )
 
     def fetch_by_id(self, _id):
@@ -218,12 +220,12 @@ class ProductItem(StoreDatabase):
         self.save()
         self.close()
 
-    def update(self, id, name, price, category):
+    def update(self, id, name, price, category, quantity):
         """ update an existing product item """
 
         self.cur.execute(
-            """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
-                name, category, price, id,)
+            """ UPDATE productitems SET name =%s, category =%s, price=%s, quantity =%s WHERE id = %s """, (
+                name, category, price, quantity, id,)
                 )
         self.save()
         self.close()
@@ -239,7 +241,7 @@ class ProductItem(StoreDatabase):
             return [self.map_productitems(productitem) for productitem in productitems]
         return None
 
-sales=[]
+
 class SalesRecord(StoreDatabase):
 
     def __init__(self, name=None, category=None, price=None, quantitysold=None, amountbrought=None):

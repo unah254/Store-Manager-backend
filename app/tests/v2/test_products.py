@@ -129,7 +129,7 @@ class TestProducts(BaseTest):
         self.assertEqual(response.status_code, 400)
         print(response)
 
-
+    
 
 if __name__ == "__main__":
     unittest.main()

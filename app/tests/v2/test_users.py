@@ -18,7 +18,7 @@ class TestUser(BaseTest):
                     "Authorization": 'Bearer {}'.format(token)
                     }
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 400)
 
     def test_non_existing_user_login(self):
         """ Test if user does not exist """

@@ -7,7 +7,7 @@ from instance.config import app_config
 
 
 from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord, RecordsCreated
-from .api.v2.views import User, Users, ProductItem, Products, SalesRecord
+from .api.v2.views import User, ProductItem, SalesRecord
 
 JWT = JWTManager()
 

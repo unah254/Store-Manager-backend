@@ -8,7 +8,7 @@ from flask import request, jsonify, make_response
 
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 # local imports
-from .models import User, ProductItem, SalesRecord, Users, Products
+from .models import User, ProductItem, SalesRecord
 from .utils import Validators
 
 
@@ -113,6 +113,9 @@ class CreateProduct(Resource):
 
     parser.add_argument('category', type=str, required=True,
                         help="This field cannot be left blank!")
+
+    parser.add_argument('quantity', type=int, required=True,
+                        help="This field cannot be left blank!")
     
     @jwt_required
     @admin_only
@@ -123,6 +126,7 @@ class CreateProduct(Resource):
         name = data['name']
         price = data['price']
         category = data['category']
+        quantity = data['quantity']
 
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
@@ -133,7 +137,7 @@ class CreateProduct(Resource):
         if product:
             return {'message':'product already exists'}, 400
         
-        product = ProductItem(name=name, category=category, price=price)
+        product = ProductItem(name=name, category=category, price=price, quantity=quantity)
 
         product.add()
         
@@ -157,7 +161,8 @@ class AllProducts(Resource):
                 "id":p.id,
                 "name":p.name,
                 "category":p.category,
-                "price":p.price
+                "price":p.price,
+                "quantity":p.quantity
             }
             all_pros.append(format_p)
 
@@ -166,7 +171,9 @@ class AllProducts(Resource):
         
 class SingleProduct(Resource):
     '''class to get a specific product'''
-
+    @jwt_required
+    @admin_only
+    @user_only
     def get(self, id):
         ''' get a specific product '''
 
@@ -176,6 +183,7 @@ class SingleProduct(Resource):
             return {"Products": product.serialize()}
 
         return {'message': "Not found"}, 404
+        
     @jwt_required
     @admin_only
     def delete(self, id):
@@ -195,10 +203,11 @@ class SingleProduct(Resource):
         name = data['name']
         price = data['price']
         category = data['category']
+        quantity = data ['quantity']
         product = ProductItem().fetch_by_id(id)
 
         if product:
-            ProductItem().update(id, name, price, category)
+            ProductItem().update(id, name, price, category, quantity)
 
         return {'message':'product succesfully modified'}, 200
         # if not product:

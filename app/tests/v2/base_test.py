@@ -6,7 +6,7 @@ from app import create_app
 from database import migrate, drop, create_admin
 
 class BaseTest(unittest.TestCase):
-   
+    
     def setUp(self):
         """ setting up tests """
 
@@ -18,6 +18,7 @@ class BaseTest(unittest.TestCase):
            drop()
            migrate()
            create_admin()
+        #    drop()
         # self.client = self.app.test_client()
         # self.app_context = self.app.app_context()
         # with self.app.app_context():
@@ -25,10 +26,10 @@ class BaseTest(unittest.TestCase):
         #     migrate()
         #     create_admin()
         
-        self.login_data = {
-            "email": "unahgrace@gmail.com",
-            "password": "Unah123",
-            "admin":True
+        self.login_attendant_data = {
+            "email": "userme@gmail.com",
+            "password": "Unah1234",
+            "admin":False
         }
         self.login_admin_data = {
             "email":"unahgrace@gmail.com",
@@ -37,12 +38,12 @@ class BaseTest(unittest.TestCase):
         self.signup_data = {
             "email": "userme@gmail.com",
             "password": "Unah1234",
-            "admin": "False"
+            "admin": False
         }
         self.email_exists_data = {
-            "email": "sifuma@gmail.com",
-            "password": "Sify1235",
-            "admin": 1
+            "email": "unahgrace@gmail.com",
+            "password": "Unah123",
+            "admin": True
         }
         
         self.invalid_product_name = {
@@ -74,6 +75,13 @@ class BaseTest(unittest.TestCase):
             "name":"hjjkjrrhjjkkjky",
             "category":"electronicsgfdf",
             "price":2500
+        }
+        self.record_data = {
+            "name":"sweatertop",
+            "category":"clothing",
+            "price":2500,
+            "quantitysold":10,
+            "amountbrought":25000
         }
         self.product_admin_data = {
             "name":"towehlers3hjj3",
@@ -115,7 +123,7 @@ class BaseTest(unittest.TestCase):
         
         response = self.client.post(
             "api/v2/login",
-            data=json.loads(self.login_data),
+            data=json.dumps(self.login_attendant_data),
             headers={'content-type': 'application/json'}
         )
         return response
@@ -131,7 +139,8 @@ class BaseTest(unittest.TestCase):
         return token
 
     # def tearDown(self):
-    #     drop()
+    #     with self.app.app_context():
+    #         drop()
 
     # # #     self.app_context.pop()
     # #     # with self.app.app_context()drop()
