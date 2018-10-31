@@ -5,7 +5,7 @@ Store app with api endpoints
 
 # Heroku link
 
-https://store-product-management-app.herokuapp.com/
+https://store-management-version-2.herokuapp.com/
 
 # Documentation
 
