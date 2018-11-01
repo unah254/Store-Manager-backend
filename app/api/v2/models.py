@@ -10,9 +10,10 @@ from flask import current_app
 
 
 
-test_db=os.getenv("DB_NAMET")
+# test_db=os.getenv("DB_NAMET")
 
 config_name = os.environ['APP_SETTINGS']
+
 
 class StoreDatabase:
     """ database connection model """
@@ -21,8 +22,8 @@ class StoreDatabase:
         self.db_host = os.getenv('DB_HOST', 'localhost')
         self.db_username = os.getenv('DB_USERNAME', 'unah')
         self.db_password = os.getenv('DB_PASSWORD', '')
-        self.db_name = os.getenv('DB_NAME', 'store_management_tests')
-        self.test_db = test_db
+        self.db_name = os.getenv('DB_NAME', 'unah')
+        # self.test_db = test_db
 
         # connect to storemanagerapp database
         try:
@@ -39,7 +40,7 @@ class StoreDatabase:
                 host=self.db_host,
                 user=self.db_username,
                 password=self.db_password,
-                database=self.test_db
+                # database=self.test_db
                 )
         except:
             print("database not connected")
@@ -206,7 +207,6 @@ class ProductItem(StoreDatabase):
         """ fetch product by name """
         self.cur.execute("SELECT * FROM productitems where name = %s", (name, ))
         product_item = self.cur.fetchone()
-
         if product_item:
             return self.map_productitems(product_item)
         return None
@@ -245,12 +245,11 @@ class ProductItem(StoreDatabase):
 
 class SalesRecord(StoreDatabase):
 
-    def __init__(self, creator_name=None, product_name=None, quantity_to_sell=None,):
+    def __init__(self, product_id=None, creator_name=None, quantity_to_sell=None,):
         super().__init__()
-        # self.id=id
+        self.product_id=product_id
         self.quantity_to_sell = quantity_to_sell
         self.creator_name = creator_name
-        self.product_name = product_name
         self.date = datetime.now().replace(second=0, microsecond=0)
 
     def create(self):
@@ -259,8 +258,8 @@ class SalesRecord(StoreDatabase):
             """
             CREATE TABLE sales (
                 id serial PRIMARY KEY,
-                creator_name VARCHAR NOT NULL UNIQUE,
-                product_name VARCHAR NOT NULL,
+                creator_name VARCHAR NOT NULL,
+                product_id INTEGER,
                 quantity_to_sell INTEGER,
                 date  TIMESTAMP
             );
@@ -271,22 +270,27 @@ class SalesRecord(StoreDatabase):
         """ drop if table exists """
         self.drop_table('sales')
 
-    def add(self, product_name, quantity_to_sell, creator_name):
+    def create_sales(self, product_id, quantity_to_sell, creator_name):
         """ add salerecord to table"""
-        self.cur.execute("SELECT quantity FROM Productitems WHERE product_name=%s", (product_name, ))
-
+        self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(1,))
         quantity_available = self.cur.fetchone()
+        print(quantity_available)
+        self.save()
+       
 
         if quantity_available:
-            self.cur.execute(
-                "INSERT INTO sales(creator_name, product_name, quantity_to_sell,date) VALUES (%s, %s, %s, %s)"
-            )
+            
+            SQL = "INSERT INTO sales(product_id, creator_name, quantity_to_sell, date) VALUES (%s, %s, %s, %s)"
+            
+            data = self.product_id, self.creator_name, self.quantity_to_sell, self.date
+            
+            self.cur.execute(SQL, data)
             self.save()
 
-            remaining_quantity = quantity_available[0] - quantity_to_sell
-
+            remaining_quantity = int (quantity_available[4]) - int (quantity_to_sell)
+            print(remaining_quantity)
             self.cur.execute(
-                "UPDATE Productitems SET quantity=%s WHERE product_name=%s", (remaining_quantity, product_name)
+                "UPDATE productitems SET quantity=%s WHERE id=%s", (remaining_quantity, product_id) 
             )
             self.save()
         # SQL = "INSERT INTO sales(creator_name,quantity_to_sell,date) VALUES (%s, %s, %s)"
@@ -297,7 +301,7 @@ class SalesRecord(StoreDatabase):
     def map_salesrecord(self, data):
         """ map salerecord to an object"""
         salerecord = SalesRecord(
-            creator_name=data[1], product_name=data[2], quantity_to_sell=data[3])
+            creator_name=data[1], product_id=data[2], quantity_to_sell=data[3])
         SalesRecord.id = data[0]
         SalesRecord.date = data[4]
         self = salerecord
@@ -309,7 +313,7 @@ class SalesRecord(StoreDatabase):
         return dict(
             # id=self.id,
             creator_name=self.creator_name,
-            product_name=self.product_name,
+            product_id=self.product_id,
             quantity_to_sell=self.quantity_to_sell,
             date=str(self.date),
 
@@ -345,15 +349,17 @@ class SalesRecord(StoreDatabase):
         self.save()
         self.close()
 
-    # def update(self, id, name, price, category):
-    #     """ update an existing product item """
+    def fetch_by_id(self, _id):
+        """ fetch product by id """
+        self.cur.execute(
+            "SELECT * FROM productitems where id = %s", (_id, ))
+        product_item = self.cur.fetchone()
+        self.save()
+        self.close()
 
-    #     self.cur.execute(
-    #         """ UPDATE productitems SET name =%s, category =%s, price=%s WHERE id = %s """, (
-    #             name, category, price, id,)
-    #             )
-    #     self.save()
-    #     self.close()
+        if product_item:
+            return self.map_salesrecord(product_item)
+        return None
 
     def fetch_all_salesrecords(self):
         """ fetch all  sales record """

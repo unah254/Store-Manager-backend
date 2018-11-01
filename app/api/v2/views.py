@@ -57,11 +57,11 @@ class SignUp(Resource):
         password = data["password"]
         
 
-        validate = Validators()
+        # validate = Validators()
 
 
-        if not validate.valid_email(email):
-            return {"message": "enter valid email"}, 400
+        # if not validate.valid_email(email):
+        #     return {"message": "enter valid email"}, 400
 
         # if not validate.valid_password(password):
         #     return {"message": "password should start with a capital letter and include a number"}, 400
@@ -141,7 +141,7 @@ class CreateProduct(Resource):
             return {'message':'product already exists, please update product'}, 400
         
         product = ProductItem(name=name, category=category, price=price, quantity=quantity)
-
+    
         product.add()
         
 
@@ -230,7 +230,7 @@ class AddSaleRecord(Resource):
                          help="This field cannot be left blank")
    
 
-    parser.add_argument('product_name', type=str, required=True,
+    parser.add_argument('product_id', type=int, required=True,
                         help="This field cannot be left blank")
     
 
@@ -246,19 +246,19 @@ class AddSaleRecord(Resource):
         data = request.get_json()
 
         creator_name = data['creator_name']
-        product_name = data['product_name']
-        quantity_to_sell = data['quantity_to_sell']
+        product_id =int(data['product_id'])
+        quantity_to_sell = int (data['quantity_to_sell'])
         
-        if not Validators().valid_product_name(product_name):
-            return {'message': 'Enter valid product name'}, 400
+        # if not Validators().valid_product_name(name):
+        #     return {'message': 'Enter valid product name'}, 400
         
-        record = SalesRecord().fetch_by_name(product_name)
-        if record:
-            return {'message':'product already exists'}, 400
+        record = SalesRecord().fetch_by_id(product_id)
+        if not record:
+            return {'message':'product does not exist'}, 400
         
-        sales = SalesRecord(creator_name=creator_name, product_name=product_name, quantity_to_sell=quantity_to_sell)
-        print(sales)
-        sales.add(creator_name, product_name, quantity_to_sell)
+        sales = SalesRecord(product_id=product_id, creator_name=creator_name, quantity_to_sell=quantity_to_sell)
+        
+        sales.create_sales(product_id, quantity_to_sell, creator_name)
 
         return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
 

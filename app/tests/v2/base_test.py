@@ -7,7 +7,7 @@ from app import create_app
 from database import migrate, drop, create_admin
 
 class BaseTest(unittest.TestCase):
-    
+    drop()
     def setUp(self):
         """ setting up tests """
 

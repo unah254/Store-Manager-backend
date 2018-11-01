@@ -17,7 +17,7 @@ class Validators:
 
     def valid_email(self, email):
         """ validate for email """
-        return re.match("[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$]", email)
+        return re.match("[^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$]", email)
 
     def valid_inputs(self, string_inputs):
         """ validate for inputs """
