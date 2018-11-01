@@ -50,7 +50,8 @@ class BaseTest(unittest.TestCase):
         self.invalid_product_name = {
             "name": "***********1",
             "category": "electronics",
-            "price": 2500
+            "price": 2500,
+            "quantity":15
         }
 
         self.incorects_pass_data = {
@@ -60,13 +61,13 @@ class BaseTest(unittest.TestCase):
 
         self.invalid_password_data = {
             "email": "mwanzia@gmail.com",
-            "password": "mandie123"
+            "password": "nht"
         }
 
-        self.invalid_email_data = {
-            "email": "me",
-            "password": "Sifuma123",
-            "admin": "True"
+        self.register_email_data = {
+            "email": "attendant@gmail.com",
+            "password": "User123",
+            "admin": "False"
         }
         self.user_doest_not_exist_data = {
             "email": "user20",
@@ -78,21 +79,21 @@ class BaseTest(unittest.TestCase):
             "price":2500
         }
         self.record_data = {
-            "name":"sweatertop",
-            "category":"clothing",
-            "price":2500,
-            "quantitysold":10,
-            "amountbrought":25000
+            "product_id":1,
+            "creator_name":"meme",
+            "quantity_to_sell":10,
         }
         self.product_admin_data = {
-            "name":"towehlers3hjj3",
+            "name":"thsisisme",
             "category":"clothing",
-            "price":2500
+            "price":2500,
+            "quantity":10,
         }
         self.product_test_data = {
             "name":"mememe",
             "category":"electronicsgfdf",
-            "price":2500
+            "price":2500,
+            "quantity":20
         }
         self.non_existing_user_data = {
             "email":"hello@gmail.com",
@@ -139,9 +140,9 @@ class BaseTest(unittest.TestCase):
         token = self.login_admin()
         return token
 
-    def tearDown(self):
-        with self.app.app_context():
-            drop()
+    # def tearDown(self):
+    #     with self.app.app_context():
+    #         drop()
 
-        self.app_context.pop()
-        # with self.app.app_context()drop()
+    #     self.app_context.pop()
+    #     # with self.app.app_context()drop()

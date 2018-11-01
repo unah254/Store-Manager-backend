@@ -37,8 +37,8 @@ class Testsales(BaseTest):
         )
         res = json.loads(responses.data.decode())
         
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(res['message'], "record successfuly created")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(res['message'], "product does not exist")
 
     def test_get_all_records(self):
         ''' Test to get all records '''
@@ -64,7 +64,7 @@ class Testsales(BaseTest):
         data = json.loads(response.data.decode('utf-8'))
        
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
         self.assertNotEqual(response.status_code, 404)
 
     # def test_get_specific_record(self):

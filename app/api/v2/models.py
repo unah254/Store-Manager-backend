@@ -25,28 +25,35 @@ class StoreDatabase:
         self.db_password = os.getenv('DB_PASSWORD', '')
         self.db_name = os.getenv('DB_NAME', 'unah')
         # self.test_db = test_db
-
-        # connect to storemanagerapp database
-        try:
-            if config_name=="development":
-                self.conn = psycopg2.connect(
-                host=self.db_host,
-                user=self.db_username,
-                password=self.db_password,
-                database=self.db_name
-                )
-                
-            if config_name=="testing":
-                self.conn = psycopg2.connect(
-                host=self.db_host,
-                user=self.db_username,
-                password=self.db_password,
-                # database=self.test_db
-                )
-        except:
-            print("database not connected")
-        # open cursor to enable operation of database
+        self.conn = psycopg2.connect(
+            host=self.db_host,
+            user=self.db_username,
+            password=self.db_password,
+            database=self.db_name,
+        )
+        # open cursor to perfome database operations
         self.cur = self.conn.cursor()
+        # connect to storemanagerapp database
+        # try:
+        #     if config_name=="development":
+        #         self.conn = psycopg2.connect(
+        #         host=self.db_host,
+        #         user=self.db_username,
+        #         password=self.db_password,
+        #         database=self.db_name
+        #         )
+                
+        #     if config_name=="testing":
+        #         self.conn = psycopg2.connect(
+        #         host=self.db_host,
+        #         user=self.db_username,
+        #         password=self.db_password,
+        #         # database=self.test_db
+        #         )
+        # except:
+        #     print("database not connected")
+        # # open cursor to enable operation of database
+        # self.cur = self.conn.cursor()
 
     def create_table(self,schema):
         """ method to create a table """
@@ -192,16 +199,29 @@ class ProductItem(StoreDatabase):
             quantity=self.quantity
         )
 
+    def random(self, data):
+        """ serialize a ProductItem object to a dictionary"""
+        return dict(
+            # id=self.id,
+            name=data[1],
+            category=data[2],
+            date=str(self.date),
+            price=data[3],
+            quantity=data[4]
+        )
+
     def fetch_by_id(self, _id):
         """ fetch product by id """
         self.cur.execute(
             "SELECT * FROM productitems where id = %s", (_id, ))
         product_item = self.cur.fetchone()
+      
         self.save()
-        self.close()
+        # self.close()
 
         if product_item:
-            return self.map_productitems(product_item)
+            
+            return self.random(product_item)
         return None
 
     def fetch_by_name(self, name):
@@ -225,12 +245,21 @@ class ProductItem(StoreDatabase):
     def update(self, id, name, price, category, quantity):
         """ update an existing product item """
 
+        # self.cur.execute("SELECT * FROM productitems WHERE name = %s ",(name,))
+        # product = self.cur.fetchone()
+        # if product is None:
+        #     return {'message':'product not available'}
         self.cur.execute(
-            """ UPDATE productitems SET name =%s, category =%s, price=%s, quantity =%s WHERE id = %s """, (
-                name, category, price, quantity, id,)
-                )
+        """ UPDATE productitems SET name =%s, category =%s, price=%s, quantity =%s WHERE id = %s """, (
+            name, category, price, quantity, id,)
+            )
         self.save()
-        self.close()
+        # self.close()
+        print(self.fetch_by_id(id))
+        return self.fetch_by_id(id)
+        
+        
+            
 
     def fetch_all_productitems(self):
         """ fetch all product items """
@@ -277,7 +306,7 @@ class SalesRecord(StoreDatabase):
         """ add salerecord to table"""
         self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(product_id,))
         quantity_available = self.cur.fetchone()
-        print(quantity_available[3])
+       
         
         self.save()
        

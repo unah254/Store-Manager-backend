@@ -205,16 +205,16 @@ class SingleProduct(Resource):
         """ Modify a product """
         data = request.get_json()
 
-        name = data['name']
-        price = data['price']
-        category = data['category']
-        quantity = data['quantity']
+        name = data.get('name')
+        price = data.get('price')
+        category = data.get('category')
+        quantity = data.get('quantity')
         product = ProductItem().fetch_by_id(id)
-
+       
         if product:
-            ProductItem().update(id, name, price, category, quantity)
-
-        return {'message': 'product succesfully modified'}, 200
+            response = ProductItem().update(id, name, price, category, quantity)
+            return {'message': 'product successfuly modified', 'response': response }
+        return {'message': 'product does not exist'}, 404
         # if not product:
         #     return {'message':'no product to be modified'},
         # ProductItem().update(product_id)
