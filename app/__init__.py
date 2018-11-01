@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask_restful import Api
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager 
 from instance.config import app_config
 
 
@@ -24,10 +24,18 @@ def create_app(config_name):
     # app.config.from_object(app_config[config_name])s
     app.config.from_pyfile('config.py')
     app.config["JWT_SECRET_KEY"]=os.getenv("JWT_SECRET_KEY")
+    app.config['JWT_BLACKLIST_ENABLED'] = True
+    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
     with app.app_context():
-        from .api.v2.views import Login, SignUp, CreateProduct, AllProducts, SingleProduct, AddSaleRecord, RecordsCreated
-
+        from .api.v2.views import (Login, SignUp, CreateProduct, AllProducts, SingleProduct, 
+                                  AddSaleRecord, RecordsCreated, Logout, blacklist)
+                                
     JWT.init_app(app)
+
+    @JWT.token_in_blacklist_loader
+    def check_if_token_in_blacklist(decrypted_token):
+        jti = decrypted_token['jti']
+        return jti in blacklist
 
 
 
@@ -39,5 +47,7 @@ def create_app(config_name):
     api.add_resource(SingleProduct, '/api/v2/products/<int:id>')
     api.add_resource(AddSaleRecord, '/api/v2/sales')
     api.add_resource(RecordsCreated, '/api/v2/sales')
+    api.add_resource(Logout, '/api/v2/logout')
+
 
     return app

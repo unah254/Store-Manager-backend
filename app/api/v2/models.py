@@ -1,10 +1,11 @@
 from datetime import datetime
 
+import os
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import psycopg2
 
-import os
 
 from flask import current_app
 
@@ -245,9 +246,10 @@ class ProductItem(StoreDatabase):
 
 class SalesRecord(StoreDatabase):
 
-    def __init__(self, product_id=None, creator_name=None, quantity_to_sell=None,):
+    def __init__(self, product_id=None, price=None, creator_name=None, quantity_to_sell=None,):
         super().__init__()
         self.product_id=product_id
+        self.price=price
         self.quantity_to_sell = quantity_to_sell
         self.creator_name = creator_name
         self.date = datetime.now().replace(second=0, microsecond=0)
@@ -258,6 +260,7 @@ class SalesRecord(StoreDatabase):
             """
             CREATE TABLE sales (
                 id serial PRIMARY KEY,
+                price INTEGER,
                 creator_name VARCHAR NOT NULL,
                 product_id INTEGER,
                 quantity_to_sell INTEGER,
@@ -272,23 +275,24 @@ class SalesRecord(StoreDatabase):
 
     def create_sales(self, product_id, quantity_to_sell, creator_name):
         """ add salerecord to table"""
-        self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(1,))
+        self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(product_id,))
         quantity_available = self.cur.fetchone()
-        print(quantity_available)
+        print(quantity_available[3])
+        
         self.save()
        
 
         if quantity_available:
             
-            SQL = "INSERT INTO sales(product_id, creator_name, quantity_to_sell, date) VALUES (%s, %s, %s, %s)"
+            SQL = "INSERT INTO sales(product_id, price,  creator_name, quantity_to_sell, date) VALUES (%s, %s, %s, %s, %s)"
             
-            data = self.product_id, self.creator_name, self.quantity_to_sell, self.date
+            data = (self.product_id, self.price, self.creator_name, self.quantity_to_sell, self.date)
             
             self.cur.execute(SQL, data)
             self.save()
 
             remaining_quantity = int (quantity_available[4]) - int (quantity_to_sell)
-            print(remaining_quantity)
+            
             self.cur.execute(
                 "UPDATE productitems SET quantity=%s WHERE id=%s", (remaining_quantity, product_id) 
             )
