@@ -90,7 +90,7 @@ class TestProducts(BaseTest):
                      "Authorization": f'Bearer {token}'
                      }
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(response.content_type, 'application/json')
         
     def test_invalid_product_name(self):
@@ -108,38 +108,9 @@ class TestProducts(BaseTest):
         )
         self.assertEqual(response.status_code, 400)
      
-    # def test_delete_products_as_not_admin(self):
-    #     """ Test delete product items """
-    #     login = self.login_admin()
-    #     token = json.loads(login.data.decode()).get('token')
-
-    #     response = self.client.post(
-    #         "api/v2/signup",
-    #         data=json.dumps(self.register_email_data),
-    #         headers={'content-type': 'application/json',
-    #         "Authorization": 'Bearer {}'.format(token)
-    #         }
-        
-    #     )
-       
-    #     signin = self.login_user()
-    #     token = json.loads(signin.data.decode()).get ('token')
-        
-    #     res = self.client.post(
-    #         "/api/v2/product",
-    #         data=json.dumps(self.product_admin_data),
-    #         content_type="application/json",
-    #         headers={
-    #                  "Authorization": 'Bearer {}'.format(token)
-    #                  }
-    #     )
-
-    #     res = json.loads(response.data.decode())
-        
-    #     self.assertEqual(res.status_code, 401)
-    #     self.assertEqual(res['message'], "Anauthorized access you must be an admin to access this level")
-    #     self.assertEqual(response.content_type, 'application/json')
     
+
+   
 
     
 

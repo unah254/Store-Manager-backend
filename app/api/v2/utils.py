@@ -12,13 +12,14 @@ class Validators:
     def valid_password(self, password):
         """validate for password """
         
-        return re.match("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$",
+        return re.search("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$",
                         password)
 
     def valid_email(self, email):
         """ validate for email """
-        return re.match("[^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$]", email)
+        return re.search(r"(^[a-zA-Z0-9_.-]+@[a-zA-Z-]+\.[.a-zA-Z-]+$)", email)
 
     def valid_inputs(self, string_inputs):
         """ validate for inputs """
         return re.match("^[a-zA-Z0-9-\._@ `]+$", string_inputs)
+

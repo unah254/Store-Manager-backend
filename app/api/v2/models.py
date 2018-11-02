@@ -113,6 +113,40 @@ class User(StoreDatabase):
             password_hash=self.password_hash,
             admin=self.admin
         )
+    def random(self, data):
+        """ serialize a user to a dictionary """
+        return dict(
+            email=data[1],
+            password=data[2],
+            admin=data[3]
+            
+        )
+    def fetch_by_id(self, _id):
+        """ fetch user by id """
+        self.cur.execute(
+            "SELECT * FROM users where id = %s", (_id, ))
+        user = self.cur.fetchone()
+      
+        self.save()
+        # self.close()
+
+        if user:
+            
+            return self.random(user)
+        return None
+
+    def update(self, id, email, password, admin):
+        """ promote a user """
+
+        self.cur.execute(
+        """ UPDATE users SET email =%s, password=%s, admin =%s WHERE id = %s """, (
+            email, password, admin, id,)
+            )
+        self.save()
+        # self.close()
+      
+        return self.fetch_by_id(id)
+        
     def delete_user(self, user_id):
         """  deleting a user"""
         self.cur.execute(
@@ -235,7 +269,7 @@ class ProductItem(StoreDatabase):
             )
         self.save()
         # self.close()
-        print(self.fetch_by_id(id))
+      
         return self.fetch_by_id(id)
         
         

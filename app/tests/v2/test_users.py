@@ -106,3 +106,23 @@ class TestUser(BaseTest):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_valid_email(self):
+        response = self.client.post(
+            "api/v2/login",
+            data=json.dumps(self.invalid_email_data),
+            headers={'content-type': 'application/json'}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_promote_non_existing_user(self):  
+        login = self.login_admin()
+        token = json.loads(login.data.decode()).get('token')
+  
+        response = self.client.put(
+            "/api/v2/user/1",
+            data=json.dumps(self.non_existing_user_data),
+            headers={"content-type": "application/json",
+                     "Authorization": f'Bearer {token}'
+                     }
+        )
+        self.assertEqual(response.status_code, 200)

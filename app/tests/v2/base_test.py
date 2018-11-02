@@ -97,7 +97,12 @@ class BaseTest(unittest.TestCase):
         }
         self.non_existing_user_data = {
             "email":"hello@gmail.com",
-            "password":"Me1243"
+            "password":"Me1243",
+            "admin":"false"
+        }
+        self.invalid_email_data = {
+            "email":"unahgracegmail.com",
+            "password":"Unah123"
         }
 
     def signup(self):

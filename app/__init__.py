@@ -28,7 +28,7 @@ def create_app(config_name):
     app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
     with app.app_context():
         from .api.v2.views import (Login, SignUp, CreateProduct, AllProducts, SingleProduct, 
-                                  AddSaleRecord, RecordsCreated, Logout, blacklist)
+                                  AddSaleRecord, RecordsCreated, Logout, blacklist, Oneuser)
                                 
     JWT.init_app(app)
 
@@ -48,6 +48,8 @@ def create_app(config_name):
     api.add_resource(AddSaleRecord, '/api/v2/sales')
     api.add_resource(RecordsCreated, '/api/v2/sales')
     api.add_resource(Logout, '/api/v2/logout')
+    api.add_resource(Oneuser, '/api/v2/user/<int:id>')
+
 
 
     return app

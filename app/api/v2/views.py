@@ -85,6 +85,13 @@ class Login(Resource):
 
         email = data["email"]
         password = data["password"]
+        
+        validate = Validators()
+
+        if not validate.valid_email(email):
+            return {"message": "enter valid email"}, 400
+        # if not validate.valid_password(password):
+        #     return {'message':'enter valid credential'}, 400
 
         user = User().fetch_by_email(email)
 
@@ -104,7 +111,23 @@ class Logout(Resource):
         except:
             return {'message': 'set authorization'}, 404
 
+class Oneuser(Resource):
+    @jwt_required
+    @admin_only
+    def put(self, id):
+        """ promote a user """
+        data = request.get_json()
 
+        email = data.get('email')
+        password = data.get('password')
+        admin = data.get('admin')
+        
+        user = User().fetch_by_id(id)
+       
+        if user:
+            response = User().update(id, email, password, admin)
+            return {'message': 'user successfuly updated', 'response': response }
+        return {'message': 'user does not exist'}, 404
 
 class CreateProduct(Resource):
     '''to get input from user and create a new product'''
