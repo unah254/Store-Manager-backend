@@ -191,14 +191,14 @@ class SingleProduct(Resource):
         ''' Delete a single product '''
 
         product = ProductItem().fetch_by_id(id)
+        if product is None:
+            return {"message": "There are no productitems for now "}, 404
 
         if product:
             ProductItem().delete(id)
         return {'message': "Succesfully Deleted"}, 200
 
-        if not product:
-            return {"message": "There are no productitems for now "}, 404
-
+        
     @jwt_required
     @admin_only
     def put(self, id):
