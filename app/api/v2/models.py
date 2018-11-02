@@ -33,27 +33,7 @@ class StoreDatabase:
         )
         # open cursor to perfome database operations
         self.cur = self.conn.cursor()
-        # connect to storemanagerapp database
-        # try:
-        #     if config_name=="development":
-        #         self.conn = psycopg2.connect(
-        #         host=self.db_host,
-        #         user=self.db_username,
-        #         password=self.db_password,
-        #         database=self.db_name
-        #         )
-                
-        #     if config_name=="testing":
-        #         self.conn = psycopg2.connect(
-        #         host=self.db_host,
-        #         user=self.db_username,
-        #         password=self.db_password,
-        #         # database=self.test_db
-        #         )
-        # except:
-        #     print("database not connected")
-        # # open cursor to enable operation of database
-        # self.cur = self.conn.cursor()
+       
 
     def create_table(self,schema):
         """ method to create a table """
@@ -302,7 +282,7 @@ class SalesRecord(StoreDatabase):
         """ drop if table exists """
         self.drop_table('sales')
 
-    def create_sales(self, product_id, quantity_to_sell, creator_name):
+    def create_sales(self, product_id, price, quantity_to_sell, creator_name):
         """ add salerecord to table"""
         self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(product_id,))
         quantity_available = self.cur.fetchone()
@@ -334,9 +314,9 @@ class SalesRecord(StoreDatabase):
     def map_salesrecord(self, data):
         """ map salerecord to an object"""
         salerecord = SalesRecord(
-            creator_name=data[1], product_id=data[2], quantity_to_sell=data[3])
+            creator_name=data[1], product_id=data[2], price=data[3], quantity_to_sell=data[4])
         SalesRecord.id = data[0]
-        SalesRecord.date = data[4]
+        SalesRecord.date = data[5]
         self = salerecord
 
         return self
@@ -347,6 +327,7 @@ class SalesRecord(StoreDatabase):
             # id=self.id,
             creator_name=self.creator_name,
             product_id=self.product_id,
+            price=self.price,
             quantity_to_sell=self.quantity_to_sell,
             date=str(self.date),
 

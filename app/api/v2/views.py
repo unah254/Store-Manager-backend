@@ -244,6 +244,7 @@ class AddSaleRecord(Resource):
 
         creator_name = data['creator_name']
         product_id = int(data['product_id'])
+        price=int(data['price'])
         quantity_to_sell = int(data['quantity_to_sell'])
 
         # if not Validators().valid_product_name(name):
@@ -254,9 +255,9 @@ class AddSaleRecord(Resource):
             return {'message': 'product does not exist'}, 400
 
         sales = SalesRecord(
-            product_id=product_id, creator_name=creator_name, quantity_to_sell=quantity_to_sell)
+            product_id=product_id, price=price, creator_name=creator_name, quantity_to_sell=quantity_to_sell)
 
-        sales.create_sales(product_id, quantity_to_sell, creator_name)
+        sales.create_sales(product_id, price, quantity_to_sell, creator_name)
 
         return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
 
