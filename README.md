@@ -20,7 +20,7 @@ https://store-management-version-2.herokuapp.com/
 | api/v1/sales                | POST          | add a new sales record .      |Attendant       |
 | api/v1/sales/<int:Id>       | GET           | fetch a specific sale record  |Admin/ creator  |
 | api/v1/sales                | GET .         | fetch all sales record .      |Admin           |
-| api/v1/sales/<int:Id> .     | DELETE .      | delete a specific sale record |Admin           |
+| api/v1/logout               | POST          |  logout from the application  |Admin           |
 | api/v1/products/<int:Id> .  |DELETE .       | delete a specific product .   |Admin           |
 | api/v1/signup               | POST .        | register a new user .         |Admin           |
 | api/v1/login .              | POST .        | login a registered user .     |Admin/attendant |
