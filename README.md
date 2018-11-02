@@ -8,7 +8,7 @@ Store app with api endpoints
 https://store-management-version-2.herokuapp.com/
 
 # Documentation
-
+https://documenter.getpostman.com/view/5299590/RzZ4ogTx
 
 # API Endpoints
 
