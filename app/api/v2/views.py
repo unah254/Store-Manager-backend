@@ -204,7 +204,7 @@ class SingleProduct(Resource):
         product = ProductItem().fetch_by_id(id)
 
         if product:
-            return {"Products": product.serialize()}
+            return {"Products": product}
 
         return {'message': "Not found"}, 404
 

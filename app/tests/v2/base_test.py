@@ -19,13 +19,7 @@ class BaseTest(unittest.TestCase):
            drop()
            migrate()
            create_admin()
-        #    drop()
-        # self.client = self.app.test_client()
-        # self.app_context = self.app.app_context()
-        # with self.app.app_context():
-        #     drop()
-        #     migrate()
-        #     create_admin()
+        
         
         self.login_attendant_data = {
             "email": "userme@gmail.com",
@@ -134,8 +128,7 @@ class BaseTest(unittest.TestCase):
             headers={'content-type': 'application/json'}
         )
         return response
-    # def logout(self):
-    #     """ logout method """
+   
         
     
 
