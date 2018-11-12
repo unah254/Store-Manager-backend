@@ -33,7 +33,6 @@ py==1.7.0
 pyasn1==0.4.4
 pycodestyle==2.4.0
 pycparser==2.19
-PyJWT==1.6.4
 pylint==2.1.1
 pytest==3.9.1
 pytest-cov==2.6.0
