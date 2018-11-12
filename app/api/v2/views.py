@@ -173,7 +173,7 @@ class CreateProduct(Resource):
 
 class AllProducts(Resource):
     @jwt_required
-    @admin_only
+   
     def get(self):
         ''' get all products '''
         productitems = ProductItem().fetch_all_productitems()
