@@ -24,14 +24,15 @@ class StoreDatabase:
         self.db_username = os.getenv('DB_USERNAME', 'unah')
         self.db_password = os.getenv('DB_PASSWORD', '')
         self.db_name = os.getenv('DB_NAME', 'unah')
-        self.db_url = os.getenv('DATABASE_URL')
+        self.port = os.getenv('PORT')
         # self.test_db = test_db
-        self.conn = psycopg2.connect(self.db_url)
+        self.conn = psycopg2.connect(
             # host=self.db_host,
-            # user=self.db_username,
-            # password=self.db_password,
-            # database=self.db_name,
-        
+            # port=self.port,
+            user=self.db_username,
+            password=self.db_password,
+            database=self.db_name,
+        )
         # open cursor to perfome database operations
         self.cur = self.conn.cursor()
        

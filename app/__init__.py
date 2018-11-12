@@ -9,10 +9,16 @@ from instance.config import app_config
 
 
 
-# from .api.v2.views import User, ProductItem, SalesRecord
+
+from .api.v2.models import User, ProductItem, SalesRecord
 # from app.api.v2.views import User, ProductItem,SalesRecord
+# def migrate():
+#     User().create()
+#     ProductItem().create()
+#     SalesRecord().create()
 
 JWT = JWTManager()
+
 
 
 def create_app(config_name):
@@ -24,6 +30,7 @@ def create_app(config_name):
     """
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
+    
     # app.config.from_object(app_config[config_name])s
     app.config.from_pyfile('config.py')
     app.config["JWT_SECRET_KEY"]=os.getenv("SECRET_KEY")
