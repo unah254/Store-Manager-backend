@@ -264,7 +264,7 @@ class AddSaleRecord(Resource):
         ''' add new sale record'''
         data = request.get_json()
 
-        creator_name = data['creator_name']
+        creator_name = get_jwt_identity()
         product_id = int(data['product_id'])
         price=int(data['price'])
         quantity_to_sell = int(data['quantity_to_sell'])
