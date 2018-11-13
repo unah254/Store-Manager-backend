@@ -260,7 +260,6 @@ class AddSaleRecord(Resource):
                         help="This field cannot be left blank!")
    
     @jwt_required
-    @user_only
     def post(self):
         ''' add new sale record'''
         data = request.get_json()
