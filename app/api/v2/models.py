@@ -22,7 +22,7 @@ class StoreDatabase:
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
         
-        self.conn = psycopg2.connect('',self.db_url)
+        self.conn = psycopg2.connect(dbname='unah')
         
         self.cur = self.conn.cursor()
        
