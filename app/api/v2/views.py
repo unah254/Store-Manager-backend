@@ -287,7 +287,6 @@ class AddSaleRecord(Resource):
 
 class RecordsCreated(Resource):
     @jwt_required
-    @user_only
     def get(self):
         ''' get all sale records '''
         records = SalesRecord().fetch_all_salesrecords()

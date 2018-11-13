@@ -51,7 +51,7 @@ class TestUser(BaseTest):
         res = json.loads(response.data.decode())
 
         self.assertEqual(response.status_code, 201)
-        # self.assertEqual(res['message'], "user attendant@gmail.com created succesfully")
+        self.assertEqual(res['message'], 'user attendant@gmail.com created successfully' )
         self.assertEqual(response.content_type, 'application/json')
 
     def test_invalid_password(self):

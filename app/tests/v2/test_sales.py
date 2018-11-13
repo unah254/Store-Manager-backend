@@ -64,8 +64,7 @@ class Testsales(BaseTest):
         data = json.loads(response.data.decode('utf-8'))
        
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status_code, 401)
-        self.assertNotEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     # def test_get_specific_record(self):
     #     ''' Test to get single product '''
