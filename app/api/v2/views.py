@@ -292,3 +292,14 @@ class RecordsCreated(Resource):
 
         if not records:
             return {"message": "No records available "}, 404
+        all_records = []
+        for r in records:
+            format_r = {
+                "creator_name": r.product_id,
+                "id": r.id,
+                "quantity_to_sell": r.quantity_to_sell,
+                "price": r.creator_name
+            }
+            print(format_r)
+            all_records.append(format_r)
+        return {"message": "Success", "records":all_records}, 200
