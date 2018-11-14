@@ -25,11 +25,6 @@ class Testing(Config):
     TESTING = True
     DEBUG = True
 
-    # DB_HOST = os.getenv('DB_HOST')
-    # DB_USERNAME = os.getenv('DB_USERNAME')
-    # DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_NAME = os.getenv('DB_NAMET')
-
 
 class StagingConfig(Config):
     """Configuration for Staging."""
@@ -45,6 +40,6 @@ class Production(Config):
 app_config = {
     'development': Development,
     'testing': Testing,
-    'staging' : StagingConfig,
+    'staging': StagingConfig,
     'production': Production
 }

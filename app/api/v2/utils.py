@@ -1,4 +1,4 @@
-import re 
+import re
 
 
 class Validators:
@@ -8,12 +8,11 @@ class Validators:
         regex = "^[a-zA-Z0-9_]+$"
         return re.match(regex, name)
 
-
     def valid_password(self, password):
         """validate for password """
-        
+
         return re.search("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$",
-                        password)
+                         password)
 
     def valid_email(self, email):
         """ validate for email """
@@ -22,4 +21,3 @@ class Validators:
     def valid_inputs(self, string_inputs):
         """ validate for inputs """
         return re.match("^[a-zA-Z0-9-\._@ `]+$", string_inputs)
-

@@ -15,6 +15,7 @@ def migrate():
     ProductItem().create()
     SalesRecord().create()
 
+
 def drop():
     """ drop test tables if they exist """
 
@@ -22,8 +23,9 @@ def drop():
     ProductItem().drop()
     SalesRecord().drop()
 
+
 def create_admin():
     """ add default admin """
     user = User(email='unahgrace@gmail.com',
-                password='Unah123',admin=True)
+                password='Unah123', admin=True)
     user.add()

@@ -12,7 +12,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from .models import User, ProductItem, SalesRecord
 from .utils import Validators
 
-blacklist=set()
+blacklist = set()
+
+
 def admin_only(_f):
     ''' Restrict access if not admin '''
     @wraps(_f)
@@ -85,7 +87,7 @@ class Login(Resource):
 
         email = data["email"]
         password = data["password"]
-        
+
         validate = Validators()
 
         if not validate.valid_email(email):
@@ -101,15 +103,17 @@ class Login(Resource):
             return {'token': token, 'message': 'successfully logged'}, 200
         return {'message': 'user not found'}, 404
 
+
 class Logout(Resource):
     @jwt_required
     def post(self):
         try:
-            jti=get_raw_jwt()['jti']
+            jti = get_raw_jwt()['jti']
             blacklist.add(jti)
-            return {'message':'successfuly logged out'}, 200
+            return {'message': 'successfuly logged out'}, 200
         except:
             return {'message': 'set authorization'}, 404
+
 
 class Oneuser(Resource):
     @jwt_required
@@ -121,13 +125,14 @@ class Oneuser(Resource):
         email = data.get('email')
         password = data.get('password')
         admin = data.get('admin')
-        
+
         user = User().fetch_by_id(id)
-       
+
         if user:
             response = User().update(id, email, password, admin)
-            return {'message': 'user successfuly updated', 'response': response }
+            return {'message': 'user successfuly updated', 'response': response}
         return {'message': 'user does not exist'}, 404
+
 
 class CreateProduct(Resource):
     '''to get input from user and create a new product'''
@@ -158,7 +163,6 @@ class CreateProduct(Resource):
         if not Validators().valid_product_name(name):
             return {'message': 'Enter valid product name'}, 400
 
-        # product = ProductItem(name=name, category=category, price=price)
         product = ProductItem().fetch_by_name(name)
         if product:
             return {'message': 'product already exists, please update product'}, 400
@@ -173,14 +177,13 @@ class CreateProduct(Resource):
 
 class AllProducts(Resource):
     @jwt_required
-   
     def get(self):
         ''' get all products '''
         productitems = ProductItem().fetch_all_productitems()
 
         if not productitems:
             return {"message": "There are no productitems for now "}, 404
-        all_pros = []
+        all_products = []
         for p in productitems:
             format_p = {
                 "id": p.id,
@@ -189,9 +192,9 @@ class AllProducts(Resource):
                 "price": p.price,
                 "quantity": p.quantity
             }
-            all_pros.append(format_p)
+            all_products.append(format_p)
 
-        return {"message": "success", "Product items": all_pros}, 200
+        return {"message": "success", "Product items": all_products}, 200
 
 
 class SingleProduct(Resource):
@@ -221,7 +224,6 @@ class SingleProduct(Resource):
             ProductItem().delete(id)
         return {'message': "Succesfully Deleted"}, 200
 
-        
     @jwt_required
     @admin_only
     def put(self, id):
@@ -233,15 +235,11 @@ class SingleProduct(Resource):
         category = data.get('category')
         quantity = data.get('quantity')
         product = ProductItem().fetch_by_id(id)
-       
+
         if product:
             response = ProductItem().update(id, name, price, category, quantity)
-            return {'message': 'product successfuly modified', 'response': response }
+            return {'message': 'product successfuly modified', 'response': response}
         return {'message': 'product does not exist'}, 404
-        # if not product:
-        #     return {'message':'no product to be modified'},
-        # ProductItem().update(product_id)
-        # return {'message':'product modified succesfully'}, 200
 
 
 class AddSaleRecord(Resource):
@@ -258,7 +256,7 @@ class AddSaleRecord(Resource):
 
     parser.add_argument('quantity_to_sell', type=int, required=True,
                         help="This field cannot be left blank!")
-   
+
     @jwt_required
     def post(self):
         ''' add new sale record'''
@@ -266,11 +264,8 @@ class AddSaleRecord(Resource):
 
         creator_name = get_jwt_identity()
         product_id = int(data['product_id'])
-        price=int(data['price'])
+        price = int(data['price'])
         quantity_to_sell = int(data['quantity_to_sell'])
-
-        # if not Validators().valid_product_name(name):
-        #     return {'message': 'Enter valid product name'}, 400
 
         record = SalesRecord().fetch_by_id(product_id)
         if not record:
@@ -302,4 +297,4 @@ class RecordsCreated(Resource):
             }
             print(format_r)
             all_records.append(format_r)
-        return {"message": "Success", "records":all_records}, 200
+        return {"message": "Success", "records": all_records}, 200

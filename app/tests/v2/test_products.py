@@ -29,7 +29,6 @@ class TestProducts(BaseTest):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(res['message'], "product successfuly created")
 
-       
     def test_get_specific_product(self):
         ''' Test to get single product '''
 
@@ -42,7 +41,6 @@ class TestProducts(BaseTest):
             "/api/v2/products/1", content_type='application/json')
 
         print(newproduct, response)
-
 
     def test_get_all_products_as_admin(self):
         """ Test all product items """
@@ -108,11 +106,5 @@ class TestProducts(BaseTest):
         )
         self.assertEqual(response.status_code, 400)
      
-    
-
-   
-
-    
-
 if __name__ == "__main__":
     unittest.main()

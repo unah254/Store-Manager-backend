@@ -104,7 +104,9 @@ class TestUser(BaseTest):
             "Authorization": 'Bearer {}'.format(token)
             }
         )
+        res = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(res['message'], 'successfuly logged out')
 
     def test_valid_email(self):
         response = self.client.post(

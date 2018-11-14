@@ -1,17 +1,8 @@
-from datetime import datetime
-
 import os
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
 import psycopg2
 
-
-from flask import current_app
-
-
-
-# test_db=os.getenv("DB_NAMET")
+from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 config_name = os.environ['APP_SETTINGS']
 
@@ -21,13 +12,12 @@ class StoreDatabase:
 
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
-        
-        self.conn = psycopg2.connect(self.db_url)
-        
-        self.cur = self.conn.cursor()
-       
 
-    def create_table(self,schema):
+        self.conn = psycopg2.connect(self.db_url)
+
+        self.cur = self.conn.cursor()
+
+    def create_table(self, schema):
         """ method to create a table """
         self.cur.execute(schema)
         self.save()
@@ -48,11 +38,11 @@ class StoreDatabase:
 class User(StoreDatabase):
 
     def __init__(self, email=None, password=None, admin=False):
-            super().__init__()
-            self.email = email
-            if password:
-                self.password_hash = generate_password_hash(password)
-                self.admin = admin
+        super().__init__()
+        self.email = email
+        if password:
+            self.password_hash = generate_password_hash(password)
+            self.admin = admin
 
     def create(self):
         """ create table users_table """
@@ -105,25 +95,25 @@ class User(StoreDatabase):
             password_hash=self.password_hash,
             admin=self.admin
         )
+
     def random(self, data):
         """ serialize a user to a dictionary """
         return dict(
             email=data[1],
             password=data[2],
             admin=data[3]
-            
+
         )
+
     def fetch_by_id(self, _id):
         """ fetch user by id """
         self.cur.execute(
             "SELECT * FROM users where id = %s", (_id, ))
         user = self.cur.fetchone()
-      
+
         self.save()
-        # self.close()
 
         if user:
-            
             return self.random(user)
         return None
 
@@ -131,14 +121,13 @@ class User(StoreDatabase):
         """ promote a user """
 
         self.cur.execute(
-        """ UPDATE users SET email =%s, password=%s, admin =%s WHERE id = %s """, (
-            email, password, admin, id,)
-            )
+            """ UPDATE users SET email =%s, password=%s, admin =%s WHERE id = %s """, (
+                email, password, admin, id,)
+        )
         self.save()
-        # self.close()
-      
+
         return self.fetch_by_id(id)
-        
+
     def delete_user(self, user_id):
         """  deleting a user"""
         self.cur.execute(
@@ -146,6 +135,7 @@ class User(StoreDatabase):
         )
         self.save()
         self.close()
+
 
 class ProductItem(StoreDatabase):
 
@@ -197,7 +187,6 @@ class ProductItem(StoreDatabase):
     def serialize(self):
         """ serialize a ProductItem object to a dictionary"""
         return dict(
-            # id=self.id,
             name=self.name,
             category=self.category,
             date=str(self.date),
@@ -208,7 +197,6 @@ class ProductItem(StoreDatabase):
     def random(self, data):
         """ serialize a ProductItem object to a dictionary"""
         return dict(
-            # id=self.id,
             name=data[1],
             category=data[2],
             date=str(self.date),
@@ -221,18 +209,18 @@ class ProductItem(StoreDatabase):
         self.cur.execute(
             "SELECT * FROM productitems where id = %s", (_id, ))
         product_item = self.cur.fetchone()
-      
+
         self.save()
-        # self.close()
 
         if product_item:
-            
+
             return self.random(product_item)
         return None
 
     def fetch_by_name(self, name):
         """ fetch product by name """
-        self.cur.execute("SELECT * FROM productitems where name = %s", (name, ))
+        self.cur.execute(
+            "SELECT * FROM productitems where name = %s", (name, ))
         product_item = self.cur.fetchone()
         if product_item:
             return self.map_productitems(product_item)
@@ -244,28 +232,19 @@ class ProductItem(StoreDatabase):
         self.cur.execute(
             "DELETE FROM productitems WHERE id = %s", (product_id, )
         )
-        
+
         self.save()
         self.close()
 
     def update(self, id, name, price, category, quantity):
         """ update an existing product item """
-
-        # self.cur.execute("SELECT * FROM productitems WHERE name = %s ",(name,))
-        # product = self.cur.fetchone()
-        # if product is None:
-        #     return {'message':'product not available'}
         self.cur.execute(
-        """ UPDATE productitems SET name =%s, category =%s, price=%s, quantity =%s WHERE id = %s """, (
-            name, category, price, quantity, id,)
-            )
+            """ UPDATE productitems SET name =%s, category =%s, price=%s, quantity =%s WHERE id = %s """, (
+                name, category, price, quantity, id,)
+        )
         self.save()
-        # self.close()
-      
+
         return self.fetch_by_id(id)
-        
-        
-            
 
     def fetch_all_productitems(self):
         """ fetch all product items """
@@ -275,7 +254,8 @@ class ProductItem(StoreDatabase):
         self.close()
 
         if productitems:
-            return [self.map_productitems(productitem) for productitem in productitems]
+            return [self.map_productitems(productitem) 
+            for productitem in productitems]
         return None
 
 
@@ -283,8 +263,8 @@ class SalesRecord(StoreDatabase):
 
     def __init__(self, product_id=None, price=None, creator_name=None, quantity_to_sell=None,):
         super().__init__()
-        self.product_id=product_id
-        self.price=price
+        self.product_id = product_id
+        self.price = price
         self.quantity_to_sell = quantity_to_sell
         self.creator_name = creator_name
         self.date = datetime.now().replace(second=0, microsecond=0)
@@ -298,7 +278,7 @@ class SalesRecord(StoreDatabase):
                 price INTEGER,
                 creator_name VARCHAR NOT NULL,
                 product_id INTEGER,
-                quantity_to_sell INTEGER,
+                quantity_to_sell INTEGER,   
                 date  TIMESTAMP
             );
             """
@@ -310,32 +290,30 @@ class SalesRecord(StoreDatabase):
 
     def create_sales(self, product_id, price, quantity_to_sell, creator_name):
         """ add salerecord to table"""
-        self.cur.execute("SELECT * FROM productitems WHERE id = %s;",(product_id,))
+        self.cur.execute(
+            "SELECT * FROM productitems WHERE id = %s;", (product_id,))
         quantity_available = self.cur.fetchone()
-       
-        
+
         self.save()
-       
 
         if quantity_available:
-            
+
             SQL = "INSERT INTO sales(product_id, price,  creator_name, quantity_to_sell, date) VALUES (%s, %s, %s, %s, %s)"
-            
-            data = (self.product_id, self.price, self.creator_name, self.quantity_to_sell, self.date)
-            
+
+            data = (self.product_id, self.price, self.creator_name,
+                    self.quantity_to_sell, self.date)
+
             self.cur.execute(SQL, data)
             self.save()
 
-            remaining_quantity = int (quantity_available[4]) - int (quantity_to_sell)
-            
+            remaining_quantity = int(
+                quantity_available[4]) - int(quantity_to_sell)
+
             self.cur.execute(
-                "UPDATE productitems SET quantity=%s WHERE id=%s", (remaining_quantity, product_id) 
+                "UPDATE productitems SET quantity=%s WHERE id=%s", (
+                    remaining_quantity, product_id)
             )
             self.save()
-        # SQL = "INSERT INTO sales(creator_name,quantity_to_sell,date) VALUES (%s, %s, %s)"
-        # data = (self.creator_name, self.product_name, self.quantity_to_sell)
-        # self.cur.execute(SQL, data)
-        # self.save()
 
     def map_salesrecord(self, data):
         """ map salerecord to an object"""
@@ -350,7 +328,6 @@ class SalesRecord(StoreDatabase):
     def serialize(self):
         """ serialize a SalesRecord object to a dictionary"""
         return dict(
-            # id=self.id,
             creator_name=self.creator_name,
             product_id=self.product_id,
             price=self.price,
