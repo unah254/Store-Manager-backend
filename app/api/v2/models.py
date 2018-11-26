@@ -135,7 +135,16 @@ class User(StoreDatabase):
         )
         self.save()
         self.close()
+    def fetch_all_users(self):
+        """ fetch all  users """
+        self.cur.execute("SELECT * FROM users")
+        users = self.cur.fetchall()
+        self.save()
+        self.close()
 
+        if users:
+            return [self.map_user(productitem) for productitem in users]
+        return None
 
 class ProductItem(StoreDatabase):
 
