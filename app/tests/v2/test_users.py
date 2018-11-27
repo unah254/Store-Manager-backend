@@ -74,7 +74,7 @@ class TestUser(BaseTest):
             headers={'content-type': 'application/json'}
         )
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
 
     def test_non_existing_email(self):
         """ Test non existing email """
@@ -153,7 +153,7 @@ class TestUser(BaseTest):
         data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.status_code, 404)
-        
+        self.assertEqual(response.status_code, 200)
+
 if __name__ == "__main__":
     unittest.main()
