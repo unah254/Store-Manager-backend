@@ -128,3 +128,32 @@ class TestUser(BaseTest):
                      }
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_get_all_users(self):
+        ''' Test to get all users '''
+        login = self.login_admin()
+        token = json.loads(login.data.decode()).get('token')
+
+        self.client.post(
+            "/api/v2/signup",
+            data=json.dumps(self.signup_data),
+            content_type="application/json",
+            headers={
+                "Authorization": 'Bearer '+token
+            }
+        )
+        response = self.client.get(
+            "/api/v2/users",
+            content_type='application/json',
+            headers={
+                "Authorization": 'Bearer '+token
+            }
+        )
+
+        data = json.loads(response.data.decode('utf-8'))
+
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.status_code, 404)
+        
+if __name__ == "__main__":
+    unittest.main()
