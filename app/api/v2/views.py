@@ -89,16 +89,17 @@ class Login(Resource):
 
         if not validate.valid_email(email):
             return {"message": "enter valid email"}, 400
-        if not validate.valid_password(password):
-            return {'message':'enter valid credential'}, 400
-
+        
         user = User().fetch_by_email(email)
 
         if user and check_password_hash(user.password_hash, password):
             expires = datetime.timedelta(days=2)
             token = create_access_token(user.email, expires_delta=expires)
             return {'token': token, 'message': 'successfully logged'}, 200
+        if not check_password_hash(user.password_hash, password):
+            return {'message': 'incorrect password'}, 401
         return {'message': 'user not found'}, 404
+        
 
 class Logout(Resource):
     @jwt_required
@@ -130,20 +131,25 @@ class Oneuser(Resource):
 
 class AllUsers(Resource):
     @jwt_required
-    def put(self, id):
-        """ view all users """
-        data = request.get_json()
+    @jwt_required
+   
+    def get(self):
+        ''' get all users '''
+        users = User().fetch_all_users()
 
-        email = data.get('email')
-        password = data.get('password')
-        admin = data.get('admin')
+        if not users:
+            return {"message": "There are currently no users"}, 404
+        all_users = []
+        for user in users:
+            print(user.password_hash)
+            format_user = {
+                "email": user.email
+            }
         
-        user = User().fetch_by_id(id)
-       
-        if user:
-            response = User().update(id, email, password, admin)
-            return {'message': 'user successfuly updated', 'response': response }
-        return {'message': 'user does not exist'}, 404
+            all_users.append(format_user)
+
+        return {"message": "success", "Available users": all_users}, 200
+
 
 class CreateProduct(Resource):
     '''to get input from user and create a new product'''

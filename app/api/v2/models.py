@@ -143,7 +143,7 @@ class User(StoreDatabase):
         self.close()
 
         if users:
-            return [self.map_user(productitem) for productitem in users]
+            return [self.map_user(user) for user in users]
         return None
 
 class ProductItem(StoreDatabase):
