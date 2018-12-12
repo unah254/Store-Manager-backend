@@ -1,0 +1,319 @@
+# module imports
+import datetime
+from functools import wraps
+from flask_restful import Resource, reqparse
+
+
+from werkzeug.security import check_password_hash
+from flask import request, make_response
+
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
+# local imports
+from .models import User, ProductItem, SalesRecord
+from .utils import Validators
+
+blacklist=set()
+def admin_only(_f):
+    ''' Restrict access if not admin '''
+    @wraps(_f)
+    def wrapper_function(*args, **kwargs):
+        user = User().fetch_by_email(get_jwt_identity())
+
+        if not user.admin:
+            return {'message': 'Anauthorized access, you must be an admin to access this level'}, 401
+        return _f(*args, **kwargs)
+    return wrapper_function
+
+def user_only(_f):
+    ''' Restrict access if not attendant '''
+    @wraps(_f)
+    def wrapper_function(*args, **kwargs):
+        user = User().fetch_by_email(get_jwt_identity())
+
+        if user.admin:
+            return {'message': 'Anauthorized access, you must be an attendant to access this level'}, 401
+        return _f(*args, **kwargs)
+    return wrapper_function
+
+
+class SignUp(Resource):
+
+    parser = reqparse.RequestParser()
+
+    parser.add_argument("email", type=str, required=True,
+                        help="This field can not be left bank")
+    parser.add_argument("password", type=str, required=True,
+                        help="This field can not be left bank")
+
+    @jwt_required
+    @admin_only
+    def post(self):
+        """ Create a new user"""
+        data = SignUp.parser.parse_args()
+
+        email = data["email"]
+        password = data["password"]
+
+        validate = Validators()
+
+        if not validate.valid_email(email):
+            return {"message": "enter valid email"}, 400
+
+        if not validate.valid_password(password):
+            return {"message": "password should start with a capital letter and include a number"}, 400
+
+        if User().fetch_by_email(email):
+            return {"message": "user with {} already exists".format(email)}, 400
+
+        user = User(email, password)
+        user.add()
+
+        return {"message": "user {} created successfully".format(email)}, 201
+
+
+class Login(Resource):
+    parser = reqparse.RequestParser()
+
+    parser.add_argument("email", type=str, required=True,
+                        help="This field can not be left bank")
+    parser.add_argument("password", type=str, required=True,
+                        help="This field can not be left bank")
+
+    def post(self):
+        data = Login.parser.parse_args()
+
+        email = data["email"]
+        password = data["password"]
+        
+        validate = Validators()
+
+        if not validate.valid_email(email):
+            return {"message": "enter valid email"}, 400
+        
+        user = User().fetch_by_email(email)
+
+        if user and check_password_hash(user.password_hash, password):
+            expires = datetime.timedelta(days=2)
+            token = create_access_token(user.email, expires_delta=expires)
+            return {'token': token, 'message': 'successfully logged'}, 200
+        if not check_password_hash(user.password_hash, password):
+            return {'message': 'incorrect password'}, 401
+        return {'message': 'user not found'}, 404
+        
+
+class Logout(Resource):
+    @jwt_required
+    def post(self):
+        try:
+            jti=get_raw_jwt()['jti']
+            blacklist.add(jti)
+            return {'message':'successfuly logged out'}, 200
+        except:
+            return {'message': 'set authorization'}, 404
+
+class Oneuser(Resource):
+    @jwt_required
+    @admin_only
+    def put(self, id):
+        """ promote a user """
+        data = request.get_json()
+
+        email = data.get('email')
+        password = data.get('password')
+        admin = data.get('admin')
+        
+        user = User().fetch_by_id(id)
+       
+        if user:
+            response = User().update(id, email, password, admin)
+            return {'message': 'user successfuly updated', 'response': response }
+        return {'message': 'user does not exist'}, 404
+
+class AllUsers(Resource):
+    @jwt_required
+    @jwt_required
+   
+    def get(self):
+        ''' get all users '''
+        users = User().fetch_all_users()
+
+        if not users:
+            return {"message": "There are currently no users"}, 404
+        all_users = []
+        for user in users:
+            print(user.password_hash)
+            format_user = {
+                "email": user.email
+            }
+        
+            all_users.append(format_user)
+
+        return {"message": "success", "Available users": all_users}, 200
+
+
+class CreateProduct(Resource):
+    '''to get input from user and create a new product'''
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True,
+                        help="This field cannot be left blank")
+
+    parser.add_argument('price', type=int, required=True,
+                        help="This field cannot be left blank")
+
+    parser.add_argument('category', type=str, required=True,
+                        help="This field cannot be left blank!")
+
+    parser.add_argument('quantity', type=int, required=True,
+                        help="This field cannot be left blank!")
+
+    @jwt_required
+    @admin_only
+    def post(self):
+        ''' add new product'''
+        data = request.get_json(force=True)
+
+        name = data['name']
+        price = data['price']
+        category = data['category']
+        quantity = data['quantity']
+
+        if not Validators().valid_product_name(name):
+            return {'message': 'Enter valid product name'}, 400
+
+        product = ProductItem().fetch_by_name(name)
+        if product:
+            return {'message': 'product already exists, please update product'}, 400
+
+        product = ProductItem(name=name, category=category,
+                              price=price, quantity=quantity)
+
+        product.add()
+
+        return {"message": "product successfuly created", "product": product.serialize()}, 201
+
+
+class AllProducts(Resource):
+    @jwt_required
+   
+    def get(self):
+        ''' get all products '''
+        productitems = ProductItem().fetch_all_productitems()
+
+        if not productitems:
+            return {"message": "There are no productitems for now "}, 404
+        all_products = []
+        for p in productitems:
+            format_p = {
+                "id": p.id,
+                "name": p.name,
+                "category": p.category,
+                "price": p.price,
+                "quantity": p.quantity
+            }
+            all_products.append(format_p)
+
+        return {"message": "success", "Product items": all_products}, 200
+
+
+class SingleProduct(Resource):
+    '''class to get a specific product'''
+    @jwt_required
+    @admin_only
+    def get(self, id):
+        ''' get a specific product '''
+
+        product = ProductItem().fetch_by_id(id)
+
+        if product:
+            return {"Products": product}
+
+        return {'message': "Not found"}, 404
+
+    @jwt_required
+    @admin_only
+    def delete(self, id):
+        ''' Delete a single product '''
+
+        product = ProductItem().fetch_by_id(id)
+        if product is None:
+            return {"message": "There are no productitems for now "}, 404
+
+        if product:
+            ProductItem().delete(id)
+        return {'message': "Succesfully Deleted"}, 200
+
+    @jwt_required
+    @admin_only
+    def put(self, id):
+        """ Modify a product """
+        data = request.get_json()
+
+        name = data.get('name')
+        price = data.get('price')
+        category = data.get('category')
+        quantity = data.get('quantity')
+        product = ProductItem().fetch_by_id(id)
+       
+        if product:
+            response = ProductItem().update(id, name, price, category, quantity)
+            return {'message': 'product successfuly modified', 'response': response }
+        return {'message': 'product does not exist'}, 404
+        
+
+
+class AddSaleRecord(Resource):
+    '''to get input from user and create a new record'''
+    parser = reqparse.RequestParser()
+    parser.add_argument('creator_name', type=str, required=True,
+                        help="This field cannot be left blank")
+
+    parser.add_argument('product_id', type=int, required=True,
+                        help="This field cannot be left blank")
+
+    parser.add_argument('price', type=int, required=True,
+                        help="This field cannot be left blank!")
+
+    parser.add_argument('quantity_to_sell', type=int, required=True,
+                        help="This field cannot be left blank!")
+   
+    @jwt_required
+    def post(self):
+        ''' add new sale record'''
+        data = request.get_json()
+
+        creator_name = get_jwt_identity()
+        product_id = int(data['product_id'])
+        price=int(data['price'])
+        quantity_to_sell = int(data['quantity_to_sell'])
+
+        record = SalesRecord().fetch_by_id(product_id)
+        if not record:
+            return {'message': 'product does not exist'}, 400
+
+        sales = SalesRecord(
+            product_id=product_id, price=price, creator_name=creator_name, quantity_to_sell=quantity_to_sell)
+
+        sales.create_sales(product_id, price, quantity_to_sell, creator_name)
+
+        return {"message": "record successfuly created", "salesrecord": sales.serialize()}, 201
+
+
+class RecordsCreated(Resource):
+    @jwt_required
+    def get(self):
+        ''' get all sale records '''
+        records = SalesRecord().fetch_all_salesrecords()
+
+        if not records:
+            return {"message": "No records available "}, 404
+        all_records = []
+        for r in records:
+            format_r = {
+                "creator_name": r.product_id,
+                "id": r.id,
+                "quantity_to_sell": r.quantity_to_sell,
+                "price": r.creator_name
+            }
+            print(format_r)
+            all_records.append(format_r)
+        return {"message": "Success", "records":all_records}, 200
