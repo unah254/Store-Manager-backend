@@ -10,9 +10,8 @@ class Validators:
 
     def valid_password(self, password):
         """validate for password """
-
-        return re.search("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,15}$",
-                        password)
+        print(password)
+        return re.search(r'^(?=.{8,}$)[A-Z]+.*(\w+\d+|\d+\w+)$', password)
 
     def valid_email(self, email):
         """ validate for email """
